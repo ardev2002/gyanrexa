@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { MenuIcon, XIcon } from "lucide-react";
-import { useState } from "react";
-import { User } from "next-auth";
-import RightNavSection from "./RightNavSection";
+import { use, useState } from "react";
+import { Session } from "next-auth";
+import RightNavSection from "@/components/RightNavSection";
 
-export default function Header({ user }: { user: User | undefined }) {
+export default function Header({ sessionPromise }: { sessionPromise: Promise<Session | null> }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const headerHeight = 70; // increased from 60px
-
+  const headerHeight = 70;
+  const session = use(sessionPromise);
   return (
     <>
       <header className="fixed top-0 left-0 w-full bg-purple-900/60 text-base-content shadow-md z-50 h-[70px]">
@@ -28,12 +28,12 @@ export default function Header({ user }: { user: User | undefined }) {
 
           {/* Desktop Right Section */}
           <div className="hidden md:flex items-center gap-4">
-            <RightNavSection user={user} />
+            <RightNavSection user={session?.user} />
           </div>
 
           {/* Mobile Navbar */}
           <div className="flex md:hidden items-center gap-3">
-            <RightNavSection user={user} />
+            <RightNavSection user={session?.user} />
             <button
               className="btn btn-sm btn-ghost"
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -63,7 +63,7 @@ export default function Header({ user }: { user: User | undefined }) {
 
           {/* Profile Section */}
           <div className="ml-auto pr-2">
-            <RightNavSection user={user} />
+            <RightNavSection user={session?.user} />
           </div>
         </div>
 

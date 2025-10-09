@@ -53,7 +53,7 @@ export default function ProfileDetails({ user }: { user: User }) {
                     <Link href="/notifications" className="flex items-center gap-2 hover:text-primary">
                         <Bell size={20} /> Notifications
                     </Link>
-                    <button onClick={async () => await signout()} className="flex items-center gap-2 hover:text-primary">
+                    <button onClick={async () => await signout()} className="flex items-center gap-2 hover:text-primary cursor-pointer">
                         <LogOut size={20} /> Sign Out
                     </button>
                 </div>

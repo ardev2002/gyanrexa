@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import "./globals.css";
-import { auth } from "@/../auth";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,13 +14,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = (await auth())?.user;
   return (
     <html lang="en">
       <body
         className={`antialiased`}
       >
-        <Header user={user} />
+        <Header sessionPromise={auth()} />
         {children}
         <Footer />
       </body>
