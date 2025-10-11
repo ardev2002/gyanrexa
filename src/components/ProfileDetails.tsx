@@ -1,5 +1,5 @@
 "use client";
-import { signout } from "@/utils/signout";
+import { signout } from "@/utils/auth";
 import { Bell, LogOut, MessageCircle } from "lucide-react";
 import { User } from "next-auth";
 import Image from "next/image";
@@ -11,8 +11,7 @@ export default function ProfileDetails({ user }: { user: User }) {
             {/* Trigger button with profile image */}
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <Image
-                        src={user.image ?? "/default-avatar.png"}
+                    <Image src={user.image ?? '/default-avatar.png'}
                         alt="profile"
                         width={40}
                         height={40}

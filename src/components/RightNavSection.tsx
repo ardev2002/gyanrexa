@@ -1,7 +1,7 @@
 import { User } from 'next-auth'
 import React from 'react'
 import ProfileDetails from './ProfileDetails';
-import { signInGoogle } from '@/utils/signout';
+import { signInGoogle } from '@/utils/auth';
 
 export default function RightNavSection({ user }: { user: User | undefined }) {
     return user ?

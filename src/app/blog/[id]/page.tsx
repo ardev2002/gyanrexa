@@ -1,0 +1,205 @@
+import { GetCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { dynamoClient } from "@/utils/lib/dynamoClient";
+import { CalendarDays, Dot } from "lucide-react";
+import SectionImageRenderer from "@/components/SectionImageRenderer";
+import React from "react";
+import BlogSidebar from "@/components/BlogSidebar";
+
+interface Section {
+  blogUrl: string;
+  order: number;
+  subheading?: string;
+  paragraph?: string;
+  imgUrl?: string;
+}
+
+interface Post {
+  blogUrl: string;
+  title: string;
+  author: string;
+  category: string;
+  createdAt: string;
+  imgUrl?: string;
+}
+
+export default async function Page(props: PageProps<"/blog/[id]">) {
+  const slugFromUrl = (await props.params).id;
+
+  // === Fetch Post ===
+  const postRes = await dynamoClient.send(
+    new GetCommand({
+      TableName: "Posts",
+      Key: { blogUrl: slugFromUrl },
+    })
+  );
+
+  const post = postRes.Item as Post | undefined;
+
+  if (!post) {
+    return (
+      <main className="max-w-6xl mx-auto p-6">
+        <div className="alert alert-error shadow-lg">
+          <span>❌ Blog not found</span>
+        </div>
+      </main>
+    );
+  }
+
+  // === Fetch Sections ===
+  const sectionRes = await dynamoClient.send(
+    new QueryCommand({
+      TableName: "Sections",
+      KeyConditionExpression: "blogUrl = :b",
+      ExpressionAttributeValues: {
+        ":b": slugFromUrl,
+      },
+    })
+  );
+
+  const sections =
+    (sectionRes.Items as Section[])?.sort((a, b) => a.order - b.order) ?? [];
+
+  // === Fetch Recent Posts ===
+  const recentRes = await dynamoClient.send(
+    new ScanCommand({
+      TableName: "Posts",
+      Limit: 5,
+    })
+  );
+
+  const recentPosts = (recentRes.Items as Post[])?.filter((p) => p.blogUrl !== slugFromUrl) ?? [];
+
+  // === Format date ===
+  const postedDate = new Date(post.createdAt).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const isLatest = (() => {
+    const postDate = new Date(post.createdAt);
+    const now = new Date();
+    const diffDays = Math.floor(
+      (now.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return diffDays <= 14;
+  })();
+
+  // === Render HTML ===
+  return (
+    <main className="w-full min-h-screen bg-white text-black dark:bg-[#1d232a] dark:text-white p-6">
+      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12">
+        {/* === Blog Post Content === */}
+        <article className="flex-1 space-y-6">
+          <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
+
+          <div className="flex flex-wrap justify-between items-center gap-3 text-sm text-black/70 dark:text-white/70">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">By {post.author}</span>
+              {isLatest && (
+                <div className="badge badge-info dark:badge-accent">LATEST</div>
+              )}
+            </div>
+            {postedDate && (
+              <div className="flex items-center gap-2">
+                <CalendarDays
+                  size={18}
+                  className="text-black/60 dark:text-white/60"
+                />
+                <span>{postedDate}</span>
+              </div>
+            )}
+          </div>
+
+          {/* === Blog Sections === */}
+<div className="space-y-10">
+  {sections.map((sec) => {
+    const lines = sec.paragraph?.split("\n") || [];
+    const parsed = {
+      paras: [] as string[],
+      listHeading: "",
+      listItems: [] as string[],
+    };
+
+    for (const line of lines) {
+      if (line.startsWith("#para:")) {
+        parsed.paras.push(line.replace("#para:", "").trim());
+      } else if (line.startsWith("#lh:")) {
+        parsed.listHeading = line.replace("#lh:", "").trim();
+      } else if (line.startsWith("#li:")) {
+        parsed.listItems.push(line.replace("#li:", "").trim());
+      }
+    }
+
+    return (
+      <section
+        key={sec.order}
+        className="
+          rounded-xl 
+          border border-gray-200 dark:border-gray-700 
+          shadow-sm 
+          bg-base-100 dark:bg-base-200 
+          px-6 py-8 
+          transition-colors duration-300
+        "
+      >
+        {sec.imgUrl && (
+          <div className="mb-6 rounded-lg overflow-hidden">
+            <SectionImageRenderer path={sec.imgUrl} alt={sec.subheading || post.title} />
+          </div>
+        )}
+
+        {sec.subheading && (
+          <h2
+            className="
+              text-2xl font-semibold mb-4 
+              text-gray-900 dark:text-gray-100
+            "
+          >
+            {sec.subheading}
+          </h2>
+        )}
+
+        <div className="space-y-4 text-gray-800 dark:text-gray-300 leading-relaxed">
+          {parsed.paras.map((p, i) => (
+            <p
+              key={i}
+              className="pl-2 sm:pl-4 md:pl-6 indent-6 text-[1.05rem]"
+            >
+              {p}
+            </p>
+          ))}
+
+          {parsed.listHeading && (
+            <h3
+              className="
+                text-lg font-semibold mt-6 mb-2 
+                text-gray-900 dark:text-gray-200
+              "
+            >
+              {parsed.listHeading}
+            </h3>
+          )}
+
+          {parsed.listItems.map((item, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-2 pl-4 sm:pl-6 md:pl-8"
+            >
+              <Dot size={20} className="text-blue-500 mt-1 flex-shrink-0" />
+              <span className="text-gray-700 dark:text-gray-300">{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  })}
+</div>
+
+        </article>
+
+        <BlogSidebar recentPosts={recentPosts} />
+      </div>
+    </main>
+  );
+}
