@@ -51,9 +51,9 @@ export default function Header({ sessionPromise }: { sessionPromise: Promise<Ses
       {/* Proper Page Padding (to avoid content behind header) */}
       <div style={{ paddingTop: `${headerHeight}px` }}></div>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar - Full Width */}
       <div
-        className={`fixed top-0 right-0 w-3/4 max-w-sm h-screen bg-base-100 z-[60] shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 w-screen h-screen bg-base-100 z-[60] transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -69,7 +69,7 @@ export default function Header({ sessionPromise }: { sessionPromise: Promise<Ses
         </div>
 
         {/* Sidebar Links */}
-        <div className="flex flex-col p-6 space-y-4">
+        <div className="flex flex-col p-6 space-y-4 text-lg font-medium">
           <Link href="/" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Home</Link>
           <Link href="/blogs" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Blogs</Link>
           <Link href="/categories" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Categories</Link>
@@ -78,10 +78,10 @@ export default function Header({ sessionPromise }: { sessionPromise: Promise<Ses
         </div>
       </div>
 
-      {/* Overlay */}
+      {/* Overlay (semi-transparent background) */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-[50]"
+          className="fixed inset-0 bg-black/40 z-[55]"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
