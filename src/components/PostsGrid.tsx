@@ -3,22 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ImageRenderer from "@/components/ImageRenderer";
+import { Post } from "@/type";
 
-type Section = {
-  order: number;
-  subheading?: string;
-  paragraph?: string;
-  imgUrl?: string;
-};
 
-type Post = {
-  blogUrl?: string;
-  title?: string;
-  author?: string;
-  category?: string;
-  createdAt?: string;
-  sections: Section[];
-};
 
 interface PostsGridProps {
   initialPosts: Post[];

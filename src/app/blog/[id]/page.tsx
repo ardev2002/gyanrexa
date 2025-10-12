@@ -4,23 +4,8 @@ import { CalendarDays, Dot } from "lucide-react";
 import SectionImageRenderer from "@/components/SectionImageRenderer";
 import React from "react";
 import BlogSidebar from "@/components/BlogSidebar";
-
-interface Section {
-  blogUrl: string;
-  order: number;
-  subheading?: string;
-  paragraph?: string;
-  imgUrl?: string;
-}
-
-interface Post {
-  blogUrl: string;
-  title: string;
-  author: string;
-  category: string;
-  createdAt: string;
-  imgUrl?: string;
-}
+import { Post, Section } from "@/type";
+import { getRecentPostsWithFirstSection } from "@/utils/lib/getRecentPostsWithFirstSection";
 
 export default async function Page(props: PageProps<"/blog/[id]">) {
   const slugFromUrl = (await props.params).id;
@@ -56,8 +41,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
     })
   );
 
-  const sections =
-    (sectionRes.Items as Section[])?.sort((a, b) => a.order - b.order) ?? [];
+  const sections = (sectionRes.Items as Section[])?.sort((a, b) => a.order - b.order) ?? [];
 
   // === Fetch Recent Posts ===
   const recentRes = await dynamoClient.send(
@@ -68,6 +52,12 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
   );
 
   const recentPosts = (recentRes.Items as Post[])?.filter((p) => p.blogUrl !== slugFromUrl) ?? [];
+
+  // create a function that returns recentposts and their first section
+  // === Combine recent posts with their first section ===
+
+const recentPostsWithSection = await getRecentPostsWithFirstSection(recentPosts);
+
 
   // === Format date ===
   const postedDate = new Date(post.createdAt).toLocaleDateString("en-IN", {
@@ -198,7 +188,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
 
         </article>
 
-        <BlogSidebar recentPosts={recentPosts} />
+        <BlogSidebar recentPosts={recentPostsWithSection} />
       </div>
     </main>
   );
