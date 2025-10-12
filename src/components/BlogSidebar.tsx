@@ -6,7 +6,7 @@ import { Github, Linkedin, Twitter, Youtube } from "lucide-react";
 import { Post, Section } from "@/type";
 
 interface BlogSidebarProps {
-  recentPosts: { post: Post, firstSection: Section }[];
+  recentPosts: (Post & { firstSection?: Section })[];
 }
 
 export default function BlogSidebar({ recentPosts }: BlogSidebarProps) {
@@ -22,21 +22,21 @@ export default function BlogSidebar({ recentPosts }: BlogSidebarProps) {
 
             <ul className="space-y-4">
               {recentPosts.slice(0, 5).map((post) => (
-                <li key={post.post.blogUrl}>
+                <li key={post.blogUrl}>
                   <Link
-                    href={`/blog/${post.post.blogUrl}`}
+                    href={`/blog/${post.blogUrl}`}
                     className="flex items-center gap-3 hover:text-primary transition"
                   >
                     <div className="relative w-16 h-10 rounded-md overflow-hidden bg-gray-300">
                       <Image
-                        src={post.firstSection.imgUrl || "/placeholder.png"}
-                        alt={post.post.title}
+                        src={post.firstSection?.imgUrl || "/placeholder.png"}
+                        alt={post.title}
                         fill
                         className="object-cover"
                       />
                     </div>
                     <span className="line-clamp-2 text-sm font-medium">
-                      {post.post.title}
+                      {post.title}
                     </span>
                   </Link>
                 </li>
