@@ -102,6 +102,7 @@ export default function AddBlogPage() {
             <input
               type="text"
               name="title"
+              placeholder="Enter blog title"
               className="input input-bordered w-full pr-10"
               defaultValue={recentState?.fields?.title}
               onKeyDown={e => inputValidator(e, 'title')}
@@ -166,7 +167,7 @@ export default function AddBlogPage() {
           )}
         />
 
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-center gap-4 mt-4 flex-wrap">
           <button
             type="button"
             onClick={addSection}
