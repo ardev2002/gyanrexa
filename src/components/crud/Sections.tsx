@@ -1,19 +1,26 @@
 "use client";
 import { UploadCloud, Upload, Trash2, Info } from 'lucide-react';
 import TaggedTextarea from '@/components/crud/TaggedTextArea';
-import { inputValidator } from '@/utils/inputValidator';
+import { inputValidator } from '@/utils/lib/inputValidator';
 import { useState } from 'react';
+import { BlogClientSection } from '@/type';
 
-export default function AddSection({ sections, handleSectionChange }: any) {
+interface SectionsProps {
+  type: 'CREATE' | 'UPDATE';
+  sections: BlogClientSection[];
+  handleSectionChange: <E extends keyof BlogClientSection, T>(index: number, field: E, value: T) => void;
+}
+
+export default function Sections({ type, sections, handleSectionChange }: SectionsProps) {
   const [signedUrl, setSignedUrl] = useState<string[]>([]);
   const handleFileSelection = (index: number, file: File) => {
     const reader = new FileReader();
     reader.onloadend = async () => {
       handleSectionChange(index, 'previewUrl', reader.result);
       const res = await fetch(`/api/s3/get-presigned-url?fileName=${encodeURIComponent(file.name)}&fileType=${file.type}`);
-      const { signedUrl, key } = await res.json();
+      const { signedUrl, key } = await res.json() as { signedUrl: string; key: string };
       setSignedUrl(prev => [...prev, signedUrl]);
-      handleSectionChange(index, 'imgUrl', key);
+      handleSectionChange(index, 'imgKey', key);
     };
     reader.readAsDataURL(file);
     handleSectionChange(index, 'imageFile', file);
@@ -26,6 +33,7 @@ export default function AddSection({ sections, handleSectionChange }: any) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('url', signedUrl[index]);
+    formData.append('key', sections[index].imgKey);
     try {
       const res = await fetch('/api/s3/upload', {
         method: 'POST',
@@ -39,23 +47,23 @@ export default function AddSection({ sections, handleSectionChange }: any) {
   };
 
   const removeImage = async (index: number) => {
-    const imgUrl = sections[index].imgUrl;
+    const imgKey = sections[index].imgKey;
 
     try {
-      if (imgUrl) {
+      if (imgKey) {
         const res = await fetch('/api/s3/remove', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ imgUrl: imgUrl }),
+          body: JSON.stringify({ imgKey }),
         });
 
         if (res.ok) {
           handleSectionChange(index, 'imageFile', null);
           handleSectionChange(index, 'previewUrl', '');
           handleSectionChange(index, 'uploadProgress', 0);
-          handleSectionChange(index, 'imgUrl', '');
+          handleSectionChange(index, 'imgKey', '');
         }
       }
     } catch (error) {
@@ -65,7 +73,7 @@ export default function AddSection({ sections, handleSectionChange }: any) {
 
   return (
     <div className="space-y-8 mt-6">
-      {sections.map((section: any, index: number) => (
+      {sections.map((section: BlogClientSection, index: number) => (
         <div key={index} className="p-4 bg-base-100 rounded shadow">
           <h2 className="text-xl font-semibold mb-4">Section {index + 1}</h2>
 
@@ -94,7 +102,7 @@ export default function AddSection({ sections, handleSectionChange }: any) {
 
           <TaggedTextarea
             value={section.paragraph}
-            onChange={(val: any) => handleSectionChange(index, "paragraph", val)}
+            onChange={(val: string) => handleSectionChange(index, "paragraph", val)}
           />
 
           {/* Image Upload UI */}
@@ -121,18 +129,16 @@ export default function AddSection({ sections, handleSectionChange }: any) {
               </div>
             </div>
 
-            {section.previewUrl && (
+            {(section.previewUrl || section.imgKey) && (
               <div className="mt-4 flex items-center gap-6 justify-center">
-                {/* Image Preview */}
                 <img
-                  src={section.previewUrl}
+                  src={section.previewUrl || `${process.env.NEXT_PUBLIC_AWS_BUCKET_URL}/${section.imgKey}`}
                   alt="Preview"
                   className="w-48 h-48 object-contain rounded-lg shadow"
                 />
 
-                {/* Buttons stacked vertically */}
                 <div className="flex flex-col gap-2">
-                  {!section.imgUrl && (
+                  {!section.imgKey && (
                     <button
                       type="button"
                       className="btn btn-sm btn-outline btn-primary flex items-center gap-2"
@@ -152,7 +158,7 @@ export default function AddSection({ sections, handleSectionChange }: any) {
                     Remove Image
                   </button>
 
-                  {section.imgUrl && (
+                  {section.imgKey && section.uploadProgress > 0 && (
                     <progress
                       className="progress progress-success w-full mt-2"
                       value={section.uploadProgress}
@@ -162,7 +168,6 @@ export default function AddSection({ sections, handleSectionChange }: any) {
                 </div>
               </div>
             )}
-
           </div>
         </div>
       ))}

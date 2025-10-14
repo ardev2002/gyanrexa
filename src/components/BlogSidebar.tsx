@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Github, Linkedin, Twitter, Youtube } from "lucide-react";
-import { Post, Section } from "@/type";
+import { PostWithSections, Section } from "@/type";
 
 interface BlogSidebarProps {
-  recentPosts: (Post & { firstSection?: Section })[];
+  recentPosts: (Omit<PostWithSections, 'sections'> & { firstSection?: Omit<Section, "order"> })[];
 }
 
 export default function BlogSidebar({ recentPosts }: BlogSidebarProps) {
@@ -21,22 +21,22 @@ export default function BlogSidebar({ recentPosts }: BlogSidebarProps) {
             </h2>
 
             <ul className="space-y-4">
-              {recentPosts.slice(0, 5).map((post) => (
-                <li key={post.blogUrl}>
+              {recentPosts.slice(0, 10).map(rp => (
+                <li key={rp.blogUrl}>
                   <Link
-                    href={`/blog/${post.blogUrl}`}
+                    href={`/blog/${rp.blogUrl}`}
                     className="flex items-center gap-3 hover:text-primary transition"
                   >
                     <div className="relative w-16 h-10 rounded-md overflow-hidden bg-gray-300">
                       <Image
-                        src={post.firstSection?.imgUrl || "/placeholder.png"}
-                        alt={post.title}
+                        src={(process.env.NEXT_PUBLIC_AWS_BUCKET_URL! + rp.firstSection?.imgKey) || "/placeholder.png"}
+                        alt={rp.title}
                         fill
                         className="object-cover"
                       />
                     </div>
                     <span className="line-clamp-2 text-sm font-medium">
-                      {post.title}
+                      {rp.title}
                     </span>
                   </Link>
                 </li>

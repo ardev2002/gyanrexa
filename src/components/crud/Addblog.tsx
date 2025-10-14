@@ -1,12 +1,17 @@
 "use client";
-import React, { useState } from "react";
-import { publishBlog } from "@/utils/actions/publishBlog";
-import AddSection from "@/components/crud/AddSection";
-import { Info } from "lucide-react";
-import { inputValidator } from "@/utils/inputValidator";
+import React, { useActionState, useState } from "react";
+import { publishBlogAction } from "@/utils/actions/publishBlogAction";
+import Sections from "@/components/crud/Sections";
+import { Info, Rocket, Search, CircleCheck, CircleX } from "lucide-react";
+import { inputValidator } from "@/utils/lib/inputValidator";
+import { BlogClientSection } from "@/type";
+import { isBlogURLAvailableAction } from "@/utils/actions/isBlogURLAvailableAction";
 
 export default function AddBlogPage() {
-  const [sections, setSections] = useState([
+  const [blogUrl, setBlogUrl] = useState('');
+  const [recentState, formAction, isPublishing] = useActionState(publishBlogAction, { message: '', isSubmitted: false, ok: false });
+  const [checkState, checkBlogURL, isChecking] = useActionState(isBlogURLAvailableAction, { message: '', isSubmitted: false, ok: false });
+  const [sections, setSections] = useState<BlogClientSection[]>([
     {
       subheading: "",
       paragraph: "",
@@ -14,7 +19,7 @@ export default function AddBlogPage() {
       imageFile: null,
       previewUrl: "",
       uploadProgress: 0,
-      imgUrl: "",
+      imgKey: "",
     },
   ]);
 
@@ -28,7 +33,7 @@ export default function AddBlogPage() {
         imageFile: null,
         previewUrl: "",
         uploadProgress: 0,
-        imgUrl: "",
+        imgKey: "",
       },
     ]);
   };
@@ -56,8 +61,41 @@ export default function AddBlogPage() {
         📝 Add New Blog Post
       </h1>
 
-      <form className="space-y-6" action={publishBlog}>
-        {/* Title */}
+      <form action={checkBlogURL}>
+        <label className="label font-semibold">Blog Url</label>
+        <div className="relative">
+          <div className="join w-full">
+            <input
+              type="text"
+              name="blogUrl"
+              placeholder="Enter blog URL (e.g., enhance-battery-life)"
+              className="input input-bordered join-item w-full"
+              defaultValue={checkState.blogUrl}
+              onKeyDown={e => inputValidator(e, "url")}
+              onChange={e => setBlogUrl(e.target.value)}
+            />
+            <button
+              type="submit"
+              className={`btn btn-primary join-item ${isChecking || blogUrl === '' || checkState.blogUrl === blogUrl ? 'btn-disabled' : ''}`}
+            >
+              {isChecking ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                <Search className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {
+          checkState.message ? (<p className={`my-1 text-sm flex items-center gap-1 ${checkState.ok ? "text-success" : "text-error"}`}>
+              {checkState.ok ? (<CircleCheck size={16} />) : (<CircleX size={16} />)} <span>{checkState.message}</span>
+            </p>) : (<p className="my-1 text-sm invisible h-4"></p>)
+        }
+      </form>
+
+      <form className="space-y-6" action={formAction}>
+        <input type="hidden" name="blogUrl" value={blogUrl} />
         <div>
           <label className="label font-semibold">Blog Title</label>
           <div className="relative">
@@ -65,33 +103,13 @@ export default function AddBlogPage() {
               type="text"
               name="title"
               className="input input-bordered w-full pr-10"
-              onKeyDown={(e) => inputValidator(e, 'title')}
+              defaultValue={recentState?.fields?.title}
+              onKeyDown={e => inputValidator(e, 'title')}
               required
             />
             <div
               className="tooltip tooltip-left absolute right-2 top-1/2 -translate-y-1/2"
               data-tip="Blog title means the main heading of the blog. This will be displayed on the blog card. ex: 'How to enhance your mobile battery life'"
-            >
-              <Info className="w-5 h-5 text-gray-500 cursor-pointer" />
-            </div>
-          </div>
-        </div>
-
-        {/* Slug */}
-        <div>
-          <label className="label font-semibold">Blog Url</label>
-          <div className="relative">
-            <input
-              type="text"
-              name="slug"
-              className="input input-bordered w-full pr-10"
-              onKeyDown={(e) => inputValidator(e, 'url')}
-              required
-            />
-            <div
-              className="tooltip tooltip-left absolute right-2 top-1/2 -translate-y-1/2"
-              data-tip="This value must be unique for each blog because it will be the identity for a blog post. Ex: 'https://www.example.com/blog-url'.
-              Only alphanumeric characters and hyphens are allowed. No spaces or special characters."
             >
               <Info className="w-5 h-5 text-gray-500 cursor-pointer" />
             </div>
@@ -132,7 +150,8 @@ export default function AddBlogPage() {
         </div>
 
         {/* Sections */}
-        <AddSection
+        <Sections
+          type="CREATE"
           sections={sections}
           handleSectionChange={handleSectionChange}
         />
@@ -165,11 +184,20 @@ export default function AddBlogPage() {
         </div>
 
         <div className="text-center mt-8">
-          <button type="submit" className="btn btn-success px-10">
-            🚀 Publish Blog
+          <button type="submit" disabled={isPublishing} className={`btn btn-success px-10 ${isPublishing || !checkState.ok || blogUrl !== checkState.blogUrl ? 'btn-disabled' : ''}`}>
+            {isPublishing ? <>Publishing <span className="loading loading-spinner loading-md"></span></> : <>Publish <Rocket /></>}
           </button>
         </div>
       </form>
+
+      {/* Toast Message */}
+      {recentState?.isSubmitted && (
+        <div className="toast toast-top toast-center">
+          <div className={`alert ${recentState?.ok ? 'alert-success' : 'alert-error'}`}>
+            <span>{recentState?.message}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

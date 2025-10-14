@@ -3,17 +3,17 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ImageRenderer from "@/components/ImageRenderer";
-import { Post } from "@/type";
+import { PostWithSections } from "@/type";
 
 
 
 interface PostsGridProps {
-  initialPosts: Post[];
+  initialPosts: PostWithSections[];
   initialNextToken: string | null;
 }
 
 export default function PostsGrid({ initialPosts, initialNextToken }: PostsGridProps) {
-  const [posts, setPosts] = useState<Post[]>(initialPosts || []);
+  const [posts, setPosts] = useState<PostWithSections[]>(initialPosts || []);
   const [nextToken, setNextToken] = useState<string | null>(initialNextToken);
   const [loading, setLoading] = useState(false);
 
@@ -72,9 +72,9 @@ export default function PostsGrid({ initialPosts, initialNextToken }: PostsGridP
               "
             >
               {/* Thumbnail */}
-              {firstSection?.imgUrl && (
+              {firstSection?.imgKey && (
                 <div className="aspect-video w-full overflow-hidden">
-                  <ImageRenderer path={firstSection.imgUrl} alt={post.title!} />
+                  <ImageRenderer imgKey={firstSection.imgKey} alt={post.title!} />
                 </div>
               )}
 
@@ -84,7 +84,7 @@ export default function PostsGrid({ initialPosts, initialNextToken }: PostsGridP
 
                 {(post.author || post.createdAt) && (
                   <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                    <span>{post.author}</span>
+                    <span>{post.author.replace(/_/g, ' ')}</span>
                     <span>{postedDate}</span>
                   </div>
                 )}

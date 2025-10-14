@@ -1,5 +1,5 @@
 "use client";
-import { signout } from "@/utils/auth";
+import { signout } from "@/utils/lib/authFunctions";
 import { Bell, LogOut, MessageCircle } from "lucide-react";
 import { User } from "next-auth";
 import Image from "next/image";

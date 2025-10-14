@@ -3,16 +3,16 @@
 import Image from "next/image";
 
 interface ImageRendererProps {
-  path: string;
+  imgKey: string;
   alt?: string;
   priority?: boolean;
 }
 
-export default function ImageRenderer({ path, alt = "Blog image", priority = false }: ImageRendererProps) {
+export default function ImageRenderer({ imgKey, alt = "Blog image", priority = false }: ImageRendererProps) {
   return (
     <div className="relative w-full aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
       <Image
-        src={path}
+        src={process.env.NEXT_PUBLIC_AWS_BUCKET_URL! + imgKey}
         alt={alt}
         fill
         priority={priority}

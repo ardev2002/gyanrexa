@@ -1,8 +1,7 @@
-import {
-  ScanCommand,
-  QueryCommand,
-  DynamoDBClient,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { dynamoClient } from "./dynamoClient";
+import { GetCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { PostWithSections, Section } from "@/type";
 
 const POSTS_TABLE = "Posts";
 const SECTIONS_TABLE = "Sections";
@@ -12,7 +11,6 @@ export async function getPostsWithSections(
   limit = 10,
   nextToken?: string
 ) {
-  // 1️⃣ Fetch posts
   const scanCommand = new ScanCommand({
     TableName: POSTS_TABLE,
     Limit: limit,
@@ -28,24 +26,25 @@ export async function getPostsWithSections(
       const queryCommand = new QueryCommand({
         TableName: SECTIONS_TABLE,
         KeyConditionExpression: "blogUrl = :blogUrl",
-        ExpressionAttributeValues: { ":blogUrl": { S: blogUrl! } },
+        ExpressionAttributeValues: { ":blogUrl": blogUrl },
       });
 
       const { Items: sectionItems } = await client.send(queryCommand);
 
-      const sections = (sectionItems || []).map((s) => ({
+      const sections = (sectionItems || []).map(s => ({
         order: Number(s.order.N),
-        subheading: s.subheading?.S as string,
-        paragraph: s.paragraph?.S as string,
-        imgUrl: s.imgUrl?.S as string,
+        subheading: s.subheading as string,
+        paragraph: s.paragraph as string,
+        imgKey: s.imgKey as string,
       }));
 
       return {
         blogUrl,
-        title: item.title?.S as string,
-        author: item.author?.S as string,
-        category: item.category?.S as string,
-        createdAt: item.createdAt?.S as string,
+        title: item.title as string,
+        author: item.author as string,
+        category: item.category as string,
+        createdAt: item.createdAt as string,
+        updatedAt: item.updatedAt as string,
         sections,
       };
     })
@@ -53,8 +52,45 @@ export async function getPostsWithSections(
 
   return {
     posts,
-    nextToken: LastEvaluatedKey
-      ? JSON.stringify(LastEvaluatedKey)
-      : null,
+    nextToken: LastEvaluatedKey ? JSON.stringify(LastEvaluatedKey) : null,
+  };
+}
+
+/**
+ * It returns a single post with its all sections.
+ */
+
+export async function getPostWithSections(blogUrl: string): Promise<PostWithSections | undefined> {
+  const { Item: post } = await dynamoClient.send(
+    new GetCommand({
+      TableName: POSTS_TABLE,
+      Key: { blogUrl }
+    })
+  )
+  if (!post) return undefined;
+  
+  const { Items: sectionsItems } = await dynamoClient.send(
+    new QueryCommand({
+      TableName: SECTIONS_TABLE,
+      KeyConditionExpression: "blogUrl = :blogUrl",
+      ExpressionAttributeValues: { ":blogUrl": blogUrl }
+    })
+  )
+
+  const sections = sectionsItems?.map(s => ({
+    order: Number(s.order.N),
+    subheading: s.subheading as string,
+    paragraph: s.paragraph as string,
+    imgKey: s.imgKey as string,
+  })) as Section[];
+
+  return {
+    blogUrl,
+    title: post?.title as string,
+    author: post?.author as string,
+    category: post?.category as string,
+    createdAt: post?.createdAt as string,
+    updatedAt: post?.updatedAt as string,
+    sections,
   };
 }

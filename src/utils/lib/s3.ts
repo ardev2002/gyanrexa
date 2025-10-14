@@ -23,8 +23,8 @@ export async function uploadToPresignedUrl(url: string, file: File) {
     return NextResponse.json({ message: 'Image uploaded successfully' });
 }
 
-export async function removeImageFromS3(imgUrl: string) {
-    const key = `blog-images/${imgUrl}`;
+export async function removeImageFromS3(imgKey: string) {
+    const key = `blog-images/${imgKey}`;
     const command = new DeleteObjectCommand({
         Bucket: 'gyanrexa',
         Key: key,

@@ -1,9 +1,11 @@
 import { User } from 'next-auth'
 import React from 'react'
 import ProfileDetails from './ProfileDetails';
-import { signInGoogle } from '@/utils/auth';
+import { signInGoogle } from '@/utils/lib/authFunctions';
+import { auth } from '@/auth';
 
-export default function RightNavSection({ user }: { user: User | undefined }) {
+export default async function RightNavSection() {
+    const user = (await auth())?.user;
     return user ?
         <ProfileDetails user={user} />
         :

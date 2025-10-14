@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Instagram, Twitter, Github, Linkedin } from "lucide-react";
+import { Instagram, Twitter, Github, Linkedin, Copyright } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -61,8 +61,8 @@ export default function Footer() {
       <div className="border-t border-gray-400 dark:border-gray-700 mt-4"></div>
 
       {/* Copyright */}
-      <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-700 dark:text-gray-400 text-sm">
-        © {new Date().getFullYear()} Gyanrexa. All rights reserved.
+      <div className="flex gap-0.5 items-center justify-center m`ax-w-7xl mx-auto px-4 py-6 text-center text-gray-700 dark:text-gray-400 text-sm">
+        <Copyright size={16}/> {new Date().getFullYear()} Gyanrexa. All rights reserved.
       </div>
     </footer>
   );

@@ -1,4 +1,4 @@
-import { getSignedUrlForUpload } from "@/utils/s3";
+import { getSignedUrlForUpload } from "@/utils/lib/s3";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
