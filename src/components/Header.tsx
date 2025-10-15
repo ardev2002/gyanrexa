@@ -94,7 +94,7 @@ export default function Header({ children, userEmail }: HeaderProps) {
           <Link href="/categories" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Categories</Link>
           <Link href="/about" onClick={() => setSidebarOpen(false)} className="hover:text-primary">About</Link>
           <Link href="/contact" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Contact</Link>
-          <Link href="/faq" className="hover:text-primary">FAQ</Link>
+          <Link href="/faq" onClick={() => setSidebarOpen(false)} className="hover:text-primary">FAQ</Link>
 
           {/* Admin Link for mobile */}
           {isAdmin && (
