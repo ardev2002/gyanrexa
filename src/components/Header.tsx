@@ -5,9 +5,19 @@ import { MenuIcon, XIcon } from "lucide-react";
 import { Suspense, useState } from "react";
 import ProfileSkeleton from "./ProfileSkeleton";
 
-export default function Header({ children }: { children: React.ReactNode }) {
+interface HeaderProps {
+  children: React.ReactNode;
+  userEmail?: string | null; // <-- Add optional prop for user email
+}
+
+const ADMIN_EMAILS = ["dekalasit@gmail.com", "manabendra847@gmail.com"];
+
+export default function Header({ children, userEmail }: HeaderProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const headerHeight = 70;
+
+  const isAdmin = userEmail && ADMIN_EMAILS.includes(userEmail);
+
   return (
     <>
       {/* Fixed Header */}
@@ -24,6 +34,13 @@ export default function Header({ children }: { children: React.ReactNode }) {
             <Link href="/categories" className="hover:text-primary">Categories</Link>
             <Link href="/about" className="hover:text-primary">About</Link>
             <Link href="/contact" className="hover:text-primary">Contact</Link>
+
+            {/* Show CRUD link only for admin */}
+            {isAdmin && (
+              <Link href="/crud" className="hover:text-primary font-semibold">
+                Admin
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Right Section */}
@@ -53,7 +70,10 @@ export default function Header({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Sidebar - Full Width */}
       <div
-        className={`fixed top-0 left-0 w-screen h-screen bg-base-100 z-[60] transform transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}>
+        className={`fixed top-0 left-0 w-screen h-screen bg-base-100 z-[60] transform transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
         {/* Sidebar Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-[#50589C]">
           <button
@@ -64,10 +84,9 @@ export default function Header({ children }: { children: React.ReactNode }) {
           </button>
           <div className="relative right-4">
             <Suspense fallback={<ProfileSkeleton />}>
-            {children}
-          </Suspense>
+              {children}
+            </Suspense>
           </div>
-          
         </div>
 
         {/* Sidebar Links */}
@@ -77,10 +96,21 @@ export default function Header({ children }: { children: React.ReactNode }) {
           <Link href="/categories" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Categories</Link>
           <Link href="/about" onClick={() => setSidebarOpen(false)} className="hover:text-primary">About</Link>
           <Link href="/contact" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Contact</Link>
+
+          {/* Admin Link for mobile */}
+          {isAdmin && (
+            <Link
+              href="/crud"
+              onClick={() => setSidebarOpen(false)}
+              className="hover:text-primary font-semibold"
+            >
+              Admin
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Overlay (semi-transparent background) */}
+      {/* Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-[55]"

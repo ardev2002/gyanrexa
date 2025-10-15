@@ -1,8 +1,7 @@
 import ProfileDetails from './ProfileDetails';
-import { auth } from '@/auth';
 import GoogleSigninButton from "./GoogleSigninButton";
+import { User } from 'next-auth';
 
-export default async function RightNavSection() {
-    const user = (await auth())?.user;
+export default async function RightNavSection({ user }: { user: User | undefined }) {
     return user ? <ProfileDetails user={user} /> : <GoogleSigninButton />
 }

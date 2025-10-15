@@ -3,6 +3,7 @@ import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import "./globals.css";
 import RightNavSection from "@/components/RightNavSection";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "GyanRexa - Sharing Thoughts, Tutorials, and Ideas with the World",
@@ -41,13 +42,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = (await auth())?.user
   return (
     <html lang="en">
       <body
         className={`antialiased`}
       >
-        <Header>
-          <RightNavSection />
+        <Header userEmail={user?.email}>
+          <RightNavSection user={user} />
         </Header>
         {children}
         <Footer />
