@@ -30,28 +30,28 @@ export default function CrudPage() {
 
   return (
     <div className="mx-auto p-6">
-      <h1 className="text-4xl font-bold text-center mb-8">🛠️ Blog Management</h1>
+      <h1 className="text-3xl font-bold text-center mb-8">🛠️ Blog Management</h1>
 
       <div className="flex justify-center gap-6 mb-10 flex-wrap">
         <button
           className={buttonClass("ADD", "btn-primary")}
           onClick={() => setMode("ADD")}
         >
-          <CirclePlus /> Add Blog
+          <CirclePlus /> Add
         </button>
 
         <button
           className={buttonClass("EDIT", "btn-warning")}
           onClick={() => setMode("EDIT")}
         >
-          <EditIcon /> Edit Blog
+          <EditIcon /> Edit
         </button>
 
         <button
           className={buttonClass("DELETE", "btn-error")}
           onClick={() => setMode("DELETE")}
         >
-          <Trash2 /> Delete Blog
+          <Trash2 /> Delete
         </button>
       </div>
 

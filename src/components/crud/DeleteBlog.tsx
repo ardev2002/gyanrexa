@@ -19,7 +19,7 @@ export default function DeleteBlog() {
 
   return (
     <div className="bg-base-200 p-8 rounded-xl shadow-lg max-w-lg mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-center flex justify-center items-center gap-2"><Trash2 /> Delete Blog Post</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Delete Blog Post</h2>
 
       {/* Search Input */}
       <form action={getPost}>

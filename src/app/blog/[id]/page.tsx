@@ -7,6 +7,7 @@ import { PostWithSections, Section } from "@/type";
 import { getRecentPosts } from "@/utils/lib/getRecentPosts";
 import { Metadata } from "next";
 import { formatDate } from "@/utils/lib/formatDate";
+import extractDescription from "@/utils/lib/extractDescription";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const slugFromUrl = (await params).id;
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const post = postRes.Item!;
   return {
     title: `${post.title} - GyanRexa`,
-    description: "GyanRexa is a platform for sharing thoughts, tutorials, and ideas with the world.",
+    description: extractDescription(post.sections[0].paragraph),
     applicationName: 'GyanRexa',
     creator: 'Ankur Rajbongshi',
     authors: [{ name: 'Ankur Rajbongshi' }, { name: 'Manabendra Nath' }],
