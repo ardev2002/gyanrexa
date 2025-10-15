@@ -6,12 +6,11 @@ import { useState } from 'react';
 import { BlogClientSection } from '@/type';
 
 interface SectionsProps {
-  type: 'CREATE' | 'UPDATE';
   sections: BlogClientSection[];
   handleSectionChange: <E extends keyof BlogClientSection, T>(index: number, field: E, value: T) => void;
 }
 
-export default function Sections({ type, sections, handleSectionChange }: SectionsProps) {
+export default function Sections({ sections, handleSectionChange }: SectionsProps) {
   const [signedUrl, setSignedUrl] = useState<string[]>([]);
   const handleFileSelection = (index: number, file: File) => {
     const reader = new FileReader();

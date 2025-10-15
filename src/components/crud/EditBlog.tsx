@@ -161,7 +161,6 @@ export default function EditBlog() {
                 Edit Sections
               </h3>
               <Sections
-                type="UPDATE"
                 sections={sections}
                 handleSectionChange={handleSectionChange}
               />
