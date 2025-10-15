@@ -191,7 +191,7 @@ export default function EditBlog() {
       {/* No match found */}
       {getPostState?.isSubmitted && !getPostState?.post && (
         <div className="alert alert-warning mt-4">
-          <span>No blog found with the provided URL.</span>
+          <span>{getPostState?.message}</span>
         </div>
       )}
     </div>

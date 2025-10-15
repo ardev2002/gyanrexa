@@ -1,4 +1,3 @@
-import { User } from 'next-auth'
 import React from 'react'
 import ProfileDetails from './ProfileDetails';
 import { signInGoogle } from '@/utils/lib/authFunctions';

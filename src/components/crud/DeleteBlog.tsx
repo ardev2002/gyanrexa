@@ -68,8 +68,8 @@ export default function DeleteBlog() {
         </div>
       ) : (
         getPostState?.blogUrl && getPostState.isSubmitted && (
-          <div className="alert alert-warning mt-4">
-            <span>No match found.</span>
+          <div className="alert alert-error mt-4">
+            <span>{getPostState?.message}</span>
           </div>
         )
       )}
