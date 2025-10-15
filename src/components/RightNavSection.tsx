@@ -1,6 +1,6 @@
 import React from 'react'
 import ProfileDetails from './ProfileDetails';
-import { signInGoogle } from '@/utils/lib/authFunctions';
+import { signInGoogle } from '@/utils/actions/authFunctions';
 import { auth } from '@/auth';
 
 export default async function RightNavSection() {
