@@ -26,18 +26,7 @@ export default function EditBlog() {
     ok: false,
   });
 
-  // 🔧 Update a specific field in a section
-  const handleSectionChange = <E extends keyof BlogClientSection, T>(
-    index: number,
-    field: E,
-    value: T
-  ) => {
-    setSections((prevSections) => {
-      const updated = [...prevSections];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
+
 
   // ✅ When blog post is fetched, populate sections
   React.useEffect(() => {
@@ -163,7 +152,7 @@ export default function EditBlog() {
               <Sections
                 type="UPDATE"
                 sections={sections}
-                handleSectionChange={handleSectionChange}
+                onSectionsChange={setSections}
               />
             </div>
           )}

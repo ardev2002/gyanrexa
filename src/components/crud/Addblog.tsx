@@ -49,11 +49,7 @@ export default function AddBlogPage() {
     setSections(updated);
   };
 
-  const handleSectionChange = (index: number, field: string, value: any) => {
-    const updated = [...sections];
-    (updated[index] as any)[field] = value;
-    setSections(updated);
-  };
+
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-base-200 text-base-content">
@@ -154,7 +150,7 @@ export default function AddBlogPage() {
         <Sections
           type="CREATE"
           sections={sections}
-          handleSectionChange={handleSectionChange}
+          onSectionsChange={setSections}
         />
 
         <input

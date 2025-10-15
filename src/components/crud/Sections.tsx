@@ -2,17 +2,27 @@
 import { UploadCloud, Upload, Trash2, Info } from 'lucide-react';
 import TaggedTextarea from '@/components/crud/TaggedTextArea';
 import { inputValidator } from '@/utils/lib/inputValidator';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BlogClientSection } from '@/type';
 
 interface SectionsProps {
   type: 'CREATE' | 'UPDATE';
   sections: BlogClientSection[];
-  handleSectionChange: <E extends keyof BlogClientSection, T>(index: number, field: E, value: T) => void;
+  onSectionsChange: (sections: BlogClientSection[]) => void;
 }
 
-export default function Sections({ type, sections, handleSectionChange }: SectionsProps) {
+export default function Sections({ type, sections, onSectionsChange }: SectionsProps) {
   const [signedUrl, setSignedUrl] = useState<string[]>([]);
+
+  const handleSectionChange = useCallback(<E extends keyof BlogClientSection, T>(
+    index: number,
+    field: E,
+    value: T
+  ) => {
+    const updatedSections = [...sections];
+    updatedSections[index] = { ...updatedSections[index], [field]: value };
+    onSectionsChange(updatedSections);
+  }, [sections, onSectionsChange]);
   const handleFileSelection = (index: number, file: File) => {
     const reader = new FileReader();
     reader.onloadend = async () => {

@@ -2,21 +2,16 @@
 import { signout } from "@/utils/lib/authFunctions";
 import { Bell, LogOut, MessageCircle } from "lucide-react";
 import { User } from "next-auth";
-import Image from "next/image";
 import Link from "next/link";
+import AvatarImage from "./AvatarImage";
 
 export default function ProfileDetails({ user }: { user: User }) {
+    const AvatarLetter = user.name?.at(0)?.toUpperCase();
     return (
         <div className="dropdown dropdown-end">
-            {/* Trigger button with profile image */}
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <Image src={user.image ?? '/default-avatar.png'}
-                        alt="profile"
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                    />
+                    <AvatarImage img={user.image ?? ""} letter={AvatarLetter ?? ""}/>
                 </div>
             </label>
 
@@ -28,13 +23,7 @@ export default function ProfileDetails({ user }: { user: User }) {
                 {/* Profile header */}
                 <li className="mb-3">
                     <div className="flex items-center gap-3">
-                        <Image
-                            src={user.image ?? "/default-avatar.png"}
-                            alt="profile"
-                            width={48}
-                            height={48}
-                            className="rounded-full"
-                        />
+                         <AvatarImage img={user.image ?? ""} letter={AvatarLetter ?? ""}/>
                         <div className="flex flex-col">
                             <p className="font-semibold">{user.name ?? "User"}</p>
                             <p className="text-xs text-gray-300">{user.email ?? "no-email"}</p>
