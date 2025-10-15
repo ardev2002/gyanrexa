@@ -1,4 +1,3 @@
-import React from 'react'
 import ProfileDetails from './ProfileDetails';
 import { auth } from '@/auth';
 import GoogleSigninButton from "./GoogleSigninButton";

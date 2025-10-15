@@ -1,5 +1,4 @@
 import { signInGoogle } from '@/utils/actions/authFunctions'
-import React from 'react'
 
 export default function GoogleSigninButton() {
   return (

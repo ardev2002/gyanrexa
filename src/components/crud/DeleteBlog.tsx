@@ -7,7 +7,7 @@ import { deleteBlogAction } from "@/utils/actions/deleteBlogAction";
 
 export default function DeleteBlog() {
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [getPostState, getPost, isFinding] = useActionState(getPostAction, { message: '', isSubmitted: false, ok: false, blogUrl: '' });
+  const [getPostState, getPost, isGetting] = useActionState(getPostAction, { message: '', isSubmitted: false, ok: false, blogUrl: '' });
   const [deleteBlogState, deleteBlog, isDeleting] = useActionState(deleteBlogAction, { message: '', isSubmitted: false, ok: false });
   const [blogUrl, setBlogUrl] = useState('');
   useEffect(() => {
@@ -33,8 +33,12 @@ export default function DeleteBlog() {
             onChange={e => setBlogUrl(e.target.value)}
             onKeyDown={e => inputValidator(e, 'url')}
           />
-          <button type="submit" className={`btn btn-primary join-item ${isFinding == true || blogUrl === '' || getPostState.blogUrl === blogUrl ? 'btn-disabled' : ''}`}>
-            <Search className="w-5 h-5" />
+          <button type="submit" className={`btn btn-primary join-item ${isGetting == true || blogUrl === '' || getPostState.blogUrl === blogUrl ? 'btn-disabled' : ''}`}>
+            {isGetting ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              <Search className="w-5 h-5" />
+            )}
           </button>
         </div>
       </form>

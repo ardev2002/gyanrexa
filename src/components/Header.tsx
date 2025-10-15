@@ -8,7 +8,6 @@ import ProfileSkeleton from "./ProfileSkeleton";
 export default function Header({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const headerHeight = 70;
-
   return (
     <>
       {/* Fixed Header */}
