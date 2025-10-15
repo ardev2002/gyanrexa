@@ -1,4 +1,3 @@
-"use client";
 import { signout } from "@/utils/lib/authFunctions";
 import { Bell, LogOut, MessageCircle } from "lucide-react";
 import { User } from "next-auth";
@@ -6,17 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function ProfileDetails({ user }: { user: User }) {
+    const AvatarLetter = user.name?.at(0)?.toUpperCase();
     return (
         <div className="dropdown dropdown-end">
             {/* Trigger button with profile image */}
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <Image src={user.image ?? '/default-avatar.png'}
+                    {user.image ? <Image src={user.image}
                         alt="profile"
                         width={40}
                         height={40}
                         className="rounded-full"
-                    />
+                    /> : <span className="text-2xl font-bold text-white bg-primary rounded-full w-10 h-10">{AvatarLetter}</span>}
                 </div>
             </label>
 
@@ -28,13 +28,12 @@ export default function ProfileDetails({ user }: { user: User }) {
                 {/* Profile header */}
                 <li className="mb-3">
                     <div className="flex items-center gap-3">
-                        <Image
-                            src={user.image ?? "/default-avatar.png"}
+                        {user.image ? <Image src={user.image}
                             alt="profile"
-                            width={48}
-                            height={48}
+                            width={40}
+                            height={40}
                             className="rounded-full"
-                        />
+                        /> : <span className="text-2xl font-bold text-white bg-primary rounded-full w-10 h-10">{AvatarLetter}</span>}
                         <div className="flex flex-col">
                             <p className="font-semibold">{user.name ?? "User"}</p>
                             <p className="text-xs text-gray-300">{user.email ?? "no-email"}</p>
@@ -52,9 +51,11 @@ export default function ProfileDetails({ user }: { user: User }) {
                     <Link href="/notifications" className="flex items-center gap-2 hover:text-primary">
                         <Bell size={20} /> Notifications
                     </Link>
-                    <button onClick={async () => await signout()} className="flex items-center gap-2 hover:text-primary cursor-pointer">
-                        <LogOut size={20} /> Sign Out
-                    </button>
+                    <form action={signout}>
+                        <button type="submit" className="flex items-center gap-2 hover:text-primary cursor-pointer">
+                            <LogOut size={20} /> Sign Out
+                        </button>
+                    </form>
                 </div>
             </ul>
         </div>
