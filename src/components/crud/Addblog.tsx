@@ -152,7 +152,6 @@ export default function AddBlogPage() {
 
         {/* Sections */}
         <Sections
-          type="CREATE"
           sections={sections}
           handleSectionChange={handleSectionChange}
         />
