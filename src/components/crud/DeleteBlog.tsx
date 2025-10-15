@@ -29,7 +29,7 @@ export default function DeleteBlog() {
             type="text"
             value={blogUrl}
             placeholder="Enter blog URL"
-            className="input input-bordered join-item w-full"
+            className="input input-bordered border-gray-400 dark:border-gray-600 join-item w-full"
             onChange={e => setBlogUrl(e.target.value)}
             onKeyDown={e => inputValidator(e, 'url')}
           />

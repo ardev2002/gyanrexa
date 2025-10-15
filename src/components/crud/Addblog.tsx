@@ -67,7 +67,7 @@ export default function AddBlogPage() {
               type="text"
               name="blogUrl"
               placeholder="Enter blog URL (e.g., enhance-battery-life)"
-              className="input input-bordered join-item w-full"
+              className="input input-bordered border-gray-400 dark:border-gray-600 join-item w-full"
               defaultValue={checkState.blogUrl}
               onKeyDown={e => inputValidator(e, "url")}
               onChange={e => setBlogUrl(e.target.value)}
@@ -101,7 +101,7 @@ export default function AddBlogPage() {
               type="text"
               name="title"
               placeholder="Enter blog title"
-              className="input input-bordered w-full pr-10"
+              className="input input-bordered border-gray-400 dark:border-gray-600 w-full pr-10"
               defaultValue={recentState?.fields?.title}
               onKeyDown={e => inputValidator(e, 'title')}
               required

@@ -7,7 +7,7 @@ import ProfileSkeleton from "./ProfileSkeleton";
 
 interface HeaderProps {
   children: React.ReactNode;
-  userEmail?: string | null; // <-- Add optional prop for user email
+  userEmail?: string | null;
 }
 
 const ADMIN_EMAILS = ["dekalasit@gmail.com", "manabendra847@gmail.com"];
@@ -29,11 +29,11 @@ export default function Header({ children, userEmail }: HeaderProps) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex space-x-6 font-medium">
-            <Link href="/blogs" className="hover:text-primary">Blogs</Link>
+          <nav className="hidden md:flex space-x-6 font-medium text-white">
             <Link href="/categories" className="hover:text-primary">Categories</Link>
             <Link href="/about" className="hover:text-primary">About</Link>
             <Link href="/contact" className="hover:text-primary">Contact</Link>
+            <Link href="/faq" className="hover:text-primary">FAQ</Link>
 
             {/* Show CRUD link only for admin */}
             {isAdmin && (
@@ -56,7 +56,7 @@ export default function Header({ children, userEmail }: HeaderProps) {
               {children}
             </Suspense>
             <button
-              className="btn btn-sm btn-ghost"
+              className="btn btn-sm btn-link text-white"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               <MenuIcon />
@@ -78,7 +78,7 @@ export default function Header({ children, userEmail }: HeaderProps) {
         <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-[#50589C]">
           <button
             onClick={() => setSidebarOpen(false)}
-            className="btn btn-ghost btn-sm"
+            className="btn btn-link btn-sm text-white"
           >
             <XIcon />
           </button>
@@ -91,11 +91,10 @@ export default function Header({ children, userEmail }: HeaderProps) {
 
         {/* Sidebar Links */}
         <div className="flex flex-col p-6 space-y-4 text-lg font-medium">
-          <Link href="/" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Home</Link>
-          <Link href="/blogs" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Blogs</Link>
           <Link href="/categories" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Categories</Link>
           <Link href="/about" onClick={() => setSidebarOpen(false)} className="hover:text-primary">About</Link>
           <Link href="/contact" onClick={() => setSidebarOpen(false)} className="hover:text-primary">Contact</Link>
+          <Link href="/faq" className="hover:text-primary">FAQ</Link>
 
           {/* Admin Link for mobile */}
           {isAdmin && (

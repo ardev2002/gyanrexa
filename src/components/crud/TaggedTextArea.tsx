@@ -44,7 +44,7 @@ export default function TaggedTextarea({ value, onChange }: any) {
                 onChange={(e) => onChange(e.target.value)}
                 onKeyDown={(e) => textareaValidator(e)}
                 onKeyUp={handleKeyUp}
-                className="textarea textarea-bordered w-full min-h-[200px]"
+                className="textarea textarea-bordered border-gray-400 dark:border-gray-600 w-full min-h-[200px]"
                 placeholder="Type here... use # to insert tags"
                 rows={6}
             />

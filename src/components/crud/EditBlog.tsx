@@ -64,7 +64,7 @@ export default function EditBlog() {
             name="blogUrl"
             placeholder="Enter blog URL"
             value={blogUrl}
-            className="input input-bordered join-item w-full"
+            className="input input-bordered border-gray-400 dark:border-gray-600 join-item w-full"
             onChange={(e) => setBlogUrl(e.target.value)}
             onKeyDown={(e) => inputValidator(e, "url")}
           />

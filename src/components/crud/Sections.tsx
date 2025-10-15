@@ -87,7 +87,7 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
                 onChange={(e) =>
                   handleSectionChange(index, "subheading", e.target.value)
                 }
-                className="input input-bordered w-full pr-10"
+                className="input input-bordered border-gray-400 dark:border-gray-600 w-full pr-10"
                 placeholder="Enter section subheading"
               />
               <div
