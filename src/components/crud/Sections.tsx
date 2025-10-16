@@ -1,9 +1,12 @@
 "use client";
-import { UploadCloud, Upload, Trash2, Info } from 'lucide-react';
+import { UploadCloud, Upload, Trash2, Info, Check } from 'lucide-react';
 import TaggedTextarea from '@/components/crud/TaggedTextArea';
 import { inputValidator } from '@/utils/lib/inputValidator';
 import { useState } from 'react';
 import { BlogClientSection } from '@/type';
+import { getPresignedUrlAction } from '@/utils/actions/getPresignedUrlAction';
+import { uploadImageAction } from '@/utils/actions/uploadImageAction';
+import { deleteImageAction } from '@/utils/actions/deleteImageAction';
 
 interface SectionsProps {
   sections: BlogClientSection[];
@@ -12,14 +15,20 @@ interface SectionsProps {
 
 export default function Sections({ sections, handleSectionChange }: SectionsProps) {
   const [signedUrl, setSignedUrl] = useState<string[]>([]);
+  const [imgKeys, setImgKeys] = useState<string[]>([]);
+  const [newImgUpload, setNewImgUpload] = useState<boolean[]>([]);
+  const [uploading, setUploading] = useState<boolean[]>([]);
+  const [deleting, setDeleting] = useState<boolean[]>([]);
+
   const handleFileSelection = (index: number, file: File) => {
     const reader = new FileReader();
     reader.onloadend = async () => {
       handleSectionChange(index, 'previewUrl', reader.result);
-      const res = await fetch(`/api/s3/get-presigned-url?fileName=${encodeURIComponent(file.name)}&fileType=${file.type}`);
-      const { signedUrl, key } = await res.json() as { signedUrl: string; key: string };
-      setSignedUrl(prev => [...prev, signedUrl]);
-      handleSectionChange(index, 'imgKey', key);
+      const { ok, imgKey, signedUrl } = await getPresignedUrlAction({ fileName: file.name, fileType: file.type })
+      if (ok) {
+        setSignedUrl(prev => [...prev, signedUrl!]);
+        setImgKeys(prev => [...prev, imgKey!]);
+      }
     };
     reader.readAsDataURL(file);
     handleSectionChange(index, 'imageFile', file);
@@ -28,20 +37,22 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
   const handleImageUpload = async (index: number) => {
     const file = sections[index].imageFile;
     if (!file || !signedUrl[index]) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('url', signedUrl[index]);
-    formData.append('key', sections[index].imgKey);
     try {
-      const res = await fetch('/api/s3/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      if (res.ok) handleSectionChange(index, 'uploadProgress', 100);
-    } catch (err) {
-      console.error('Upload failed', err);
-      handleSectionChange(index, 'uploadProgress', 0);
+      setUploading(prev => [...prev, true]);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('url', signedUrl[index]);
+      const { ok } = await uploadImageAction(formData);
+      if (ok) {
+        handleSectionChange(index, 'imgKey', imgKeys[index]);
+        setNewImgUpload(prev => [...prev, true]);
+      }
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally{
+      setUploading(prev => [...prev, false]);
     }
   };
 
@@ -50,23 +61,19 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
 
     try {
       if (imgKey) {
-        const res = await fetch('/api/s3/remove', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ imgKey }),
-        });
-
-        if (res.ok) {
+        setDeleting(prev => [...prev, true]);
+        const { ok } = await deleteImageAction(imgKey);
+        if (ok) {
           handleSectionChange(index, 'imageFile', null);
           handleSectionChange(index, 'previewUrl', '');
-          handleSectionChange(index, 'uploadProgress', 0);
           handleSectionChange(index, 'imgKey', '');
         }
       }
     } catch (error) {
       console.error('Error removing image from S3:', error);
+    }
+    finally{
+      setDeleting(prev => [...prev, false]);
     }
   };
 
@@ -140,29 +147,35 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
                   {!section.imgKey && (
                     <button
                       type="button"
+                      disabled={uploading[index]}
                       className="btn btn-sm btn-outline btn-primary flex items-center gap-2"
                       onClick={() => handleImageUpload(index)}
                     >
-                      <Upload className="w-4 h-4" />
-                      Upload Image
+                    {
+                      uploading[index] ? (<span className="loading loading-spinner loading-sm"></span>) :
+                      (<div className="flex items-center gap-2"><Upload className="w-4 h-4" /><span>Upload Image</span></div>)
+                    }
+                      
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline btn-error flex items-center gap-2"
-                    onClick={() => removeImage(index)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Remove Image
-                  </button>
+                  {
+                    section.imgKey &&
+                    (<button
+                      type="button"
+                      disabled={deleting[index]}
+                      className="btn btn-sm btn-outline btn-error flex items-center gap-2"
+                      onClick={() => removeImage(index)}
+                    >
+                    {
+                      deleting[index] ? (<span className="loading loading-spinner loading-sm"></span>) :
+                      (<div className="flex items-center gap-2"><Trash2 className="w-4 h-4" /><span>Delete Image</span></div>)
+                    }
+                    </button>)
+                  }
 
-                  {section.imgKey && section.uploadProgress > 0 && (
-                    <progress
-                      className="progress progress-success w-full mt-2"
-                      value={section.uploadProgress}
-                      max="100"
-                    />
+                  {newImgUpload[index] && section.imgKey && (
+                    <div className="text-sm alert alert-success flex items-center gap-1"><Check className="w-4 h-4" /><span>Image uploaded successfully</span></div>
                   )}
                 </div>
               </div>

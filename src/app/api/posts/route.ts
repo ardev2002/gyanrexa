@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { dynamoClient } from "@/utils/lib/dynamoClient";
 import { getPostsWithSections } from "@/utils/lib/getPosts";
 
 export async function GET(req: Request) {
@@ -8,7 +7,6 @@ export async function GET(req: Request) {
 
   try {
     const { posts, nextToken: newToken } = await getPostsWithSections(
-      dynamoClient,
       10,
       nextToken
     );

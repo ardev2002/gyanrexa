@@ -18,7 +18,7 @@ export default function SectionImageRenderer({
       {/* Keep fixed aspect ratio like 21:9 (wider, shorter) */}
       <div className="relative w-full" style={{ aspectRatio: "21 / 9" }}>
         <Image
-          src={process.env.NEXT_PUBLIC_AWS_BUCKET_URL! + imgKey}
+          src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${imgKey}`}
           alt={alt}
           fill
           priority={priority}

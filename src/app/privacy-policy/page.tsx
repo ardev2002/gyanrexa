@@ -1,7 +1,7 @@
 import { Mail } from "lucide-react";
 export default function PrivacyPolicy() {
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-base-100 rounded-2xl shadow-lg my-10 border border-base-300">
+    <div className="max-w-4xl mx-auto p-8 bg-base-100 rounded-2xl shadow-lg my-10 border border-gray-400 dark:border-gray-600">
       <h1 className="text-4xl font-bold text-primary mb-3 text-center">Privacy Policy</h1>
       <p className="text-center text-sm text-gray-500 mb-8">Last updated: October 12, 2025</p>
 

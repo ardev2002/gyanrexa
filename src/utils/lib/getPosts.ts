@@ -1,4 +1,3 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { dynamoClient } from "./dynamoClient";
 import { GetCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { PostWithSections, Section } from "@/type";
@@ -7,7 +6,6 @@ const POSTS_TABLE = "Posts";
 const SECTIONS_TABLE = "Sections";
 
 export async function getPostsWithSections(
-  client: DynamoDBClient,
   limit = 10,
   nextToken?: string
 ) {
@@ -17,22 +15,22 @@ export async function getPostsWithSections(
     ExclusiveStartKey: nextToken ? JSON.parse(nextToken) : undefined,
   });
 
-  const { Items, LastEvaluatedKey } = await client.send(scanCommand);
+  const { Items, LastEvaluatedKey } = await dynamoClient.send(scanCommand);
 
   // 2️⃣ For each post, fetch its sections
   const posts = await Promise.all(
     (Items || []).map(async (item) => {
-      const blogUrl = item.blogUrl.S as string;
+      const blogUrl = item.blogUrl as string;
       const queryCommand = new QueryCommand({
         TableName: SECTIONS_TABLE,
         KeyConditionExpression: "blogUrl = :blogUrl",
         ExpressionAttributeValues: { ":blogUrl": blogUrl },
       });
 
-      const { Items: sectionItems } = await client.send(queryCommand);
+      const { Items: sectionItems } = await dynamoClient.send(queryCommand);
 
       const sections = (sectionItems || []).map(s => ({
-        order: Number(s.order.N),
+        order: Number(s.order),
         subheading: s.subheading as string,
         paragraph: s.paragraph as string,
         imgKey: s.imgKey as string,
@@ -78,7 +76,7 @@ export async function getPostWithSections(blogUrl: string): Promise<PostWithSect
   )
 
   const sections = sectionsItems?.map(s => ({
-    order: Number(s.order.N),
+    order: Number(s.order),
     subheading: s.subheading as string,
     paragraph: s.paragraph as string,
     imgKey: s.imgKey as string,

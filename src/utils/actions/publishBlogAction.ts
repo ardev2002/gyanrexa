@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { dynamoClient } from "@/utils/lib/dynamoClient";
 import { BatchWriteCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { Section } from "@/type";
-import { BLOGURL_INDEX_TABLE, POSTS_TABLE } from "../lib/CONFIG";
+import { POSTS_TABLE } from "../lib/CONFIG";
 export async function publishBlogAction(prevState: any, formData: FormData) {
     const title = formData.get("title") as string;
     const blogUrl = formData.get("blogUrl") as string;
@@ -11,7 +11,8 @@ export async function publishBlogAction(prevState: any, formData: FormData) {
     const author = formData.get("author") as string;
     const sections = JSON.parse(formData.get("sections") as string);
     const time = new Date().toISOString();
-
+    console.log('Sections: ', sections)
+    return
     const fields = { title, blogUrl, category, author, time, sections };
     try {
         await dynamoClient.send(new PutCommand({
@@ -31,7 +32,6 @@ export async function publishBlogAction(prevState: any, formData: FormData) {
                 PutRequest: {
                     Item: {
                         blogUrl,
-                        order: section.order,
                         subheading: section.subheading,
                         paragraph: section.paragraph,
                         imgKey: section.imgKey,

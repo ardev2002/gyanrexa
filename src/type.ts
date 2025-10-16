@@ -44,6 +44,32 @@ export interface BlogClientSection {
   order: number;
   imageFile: File | null;
   previewUrl: string;
-  uploadProgress: number;
   imgKey: string;
+}
+
+export interface Authors{
+  "@select": string;
+  "@ankur": string;
+  "@manabendra": string;
+}
+
+export interface Categories{
+  SELECT: string;
+  MOBILES: string;
+  TECHNOLOGY: string;
+  TIPS_AND_TRICKS: string;
+  LIFESTYLE: string;
+  HEALTH_AND_WELLNESS: string;
+  ENTERTAINMENT: string;
+  SPORTS: string;
+  MYTHOLOGY: string;
+  SPIRITUALITY: string;
+  HISTORY: string;
+  BIOGRAPHY: string;
+  TRAVEL: string;
+  FOOD: string;
+  ARTCULTURE: string;
+  MUSICFILM: string;
+  GAMES: string;
+  BOOKS: string;
 }

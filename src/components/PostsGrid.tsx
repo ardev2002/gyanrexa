@@ -84,7 +84,7 @@ export default function PostsGrid({ initialPosts, initialNextToken }: PostsGridP
 
                 {(post.author || post.createdAt) && (
                   <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                    <span>{post.author.replace(/_/g, ' ')}</span>
+                    <span>{post.author}</span>
                     <span>{postedDate}</span>
                   </div>
                 )}

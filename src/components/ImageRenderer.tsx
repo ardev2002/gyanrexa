@@ -12,7 +12,7 @@ export default function ImageRenderer({ imgKey, alt = "Blog image", priority = f
   return (
     <div className="relative w-full aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
       <Image
-        src={process.env.NEXT_PUBLIC_AWS_BUCKET_URL! + imgKey}
+        src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${imgKey}`}
         alt={alt}
         fill
         priority={priority}

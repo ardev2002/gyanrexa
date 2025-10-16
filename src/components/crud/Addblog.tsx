@@ -18,7 +18,6 @@ export default function AddBlogPage() {
       order: 1,
       imageFile: null,
       previewUrl: "",
-      uploadProgress: 0,
       imgKey: "",
     },
   ]);
@@ -32,7 +31,6 @@ export default function AddBlogPage() {
         order: sections.length + 1,
         imageFile: null,
         previewUrl: "",
-        uploadProgress: 0,
         imgKey: "",
       },
     ]);
@@ -46,7 +44,7 @@ export default function AddBlogPage() {
     const updated = sections
       .slice(0, -1)
       .map((sec, i) => ({ ...sec, order: i + 1 }));
-    setSections(updated);
+      setSections(updated);
   };
 
   const handleSectionChange = (index: number, field: string, value: any) => {
@@ -86,9 +84,17 @@ export default function AddBlogPage() {
         </div>
 
         {
-          checkState.message ? (<p className={`my-1 text-sm flex items-center gap-1 ${checkState.ok ? "text-success" : "text-error"}`}>
+          checkState.message && (
+            <p className={`my-1 text-sm flex items-center gap-1 ${checkState.ok ? "text-success" : "text-error"}`}>
               {checkState.ok ? (<CircleCheck size={16} />) : (<CircleX size={16} />)} <span>{checkState.message}</span>
-            </p>) : (<p className="my-1 text-sm invisible h-4"></p>)
+            </p>
+          )
+        }
+
+        {
+          !checkState.message && (
+            <p className="my-1 text-sm invisible h-4"></p>
+          )
         }
       </form>
 
@@ -159,7 +165,7 @@ export default function AddBlogPage() {
           name="sections"
           value={JSON.stringify(
             sections.map(
-              ({ imageFile, previewUrl, uploadProgress, ...rest }) => rest
+              ({ imageFile, previewUrl, ...rest }) => rest
             )
           )}
         />

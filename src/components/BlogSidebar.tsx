@@ -29,7 +29,7 @@ export default function BlogSidebar({ recentPosts }: BlogSidebarProps) {
                   >
                     <div className="relative w-16 h-10 rounded-md overflow-hidden bg-gray-300">
                       <Image
-                        src={(process.env.NEXT_PUBLIC_AWS_BUCKET_URL! + rp.firstSection?.imgKey) || "/placeholder.png"}
+                        src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${rp.firstSection?.imgKey}`}
                         alt={rp.title}
                         fill
                         className="object-cover"

@@ -8,19 +8,14 @@ import { getRecentPosts } from "@/utils/lib/getRecentPosts";
 import { Metadata } from "next";
 import { formatDate } from "@/utils/lib/formatDate";
 import extractDescription from "@/utils/lib/extractDescription";
+import { getPostWithSections } from "@/utils/lib/getPosts";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const slugFromUrl = (await params).id;
-  const postRes = await dynamoClient.send(
-    new GetCommand({
-      TableName: "Posts",
-      Key: { blogUrl: slugFromUrl },
-    })
-  );
-  const post = postRes.Item!;
+  const post = await getPostWithSections(slugFromUrl);
   return {
-    title: `${post.title} - GyanRexa`,
-    description: extractDescription(post.sections[0].paragraph),
+    title: `${post?.title} - GyanRexa`,
+    description: extractDescription(post?.sections[0].paragraph!),
     applicationName: 'GyanRexa',
     creator: 'Ankur Rajbongshi',
     authors: [{ name: 'Ankur Rajbongshi' }, { name: 'Manabendra Nath' }],

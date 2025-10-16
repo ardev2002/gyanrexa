@@ -28,12 +28,12 @@ export default function Footer() {
         {/* Quick Links Section */}
         <div className="flex flex-col items-center md:items-start">
           <span className="text-gray-800 dark:text-gray-300 font-semibold mb-2">Quick Links</span>
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-            <Link href="/" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">Home</Link>
-            <Link href="/blogs" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">Blogs</Link>
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 flex-wrap">
             <Link href="/categories" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">Categories</Link>
             <Link href="/about" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">About</Link>
             <Link href="/contact" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">Contact</Link>
+            <Link href="/terms-and-condition" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">Terms & Condition</Link>
+            <Link href="/privacy-policy" className="hover:text-primary transition-colors text-gray-700 dark:text-gray-400">Privacy Policy</Link>
           </div>
         </div>
 
@@ -60,7 +60,6 @@ export default function Footer() {
       {/* Divider */}
       <div className="border-t border-gray-400 dark:border-gray-700 mt-4"></div>
 
-      {/* Copyright */}
       <div className="flex gap-0.5 items-center justify-center m`ax-w-7xl mx-auto px-4 py-6 text-center text-gray-700 dark:text-gray-400 text-sm">
         <Copyright size={16}/> {new Date().getFullYear()} Gyanrexa. All rights reserved.
       </div>

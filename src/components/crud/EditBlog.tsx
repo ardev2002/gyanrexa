@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useActionState } from "react";
+import React, { useState, useActionState, useEffect, useRef } from "react";
 import { Search, Pencil, Save } from "lucide-react";
 import { inputValidator } from "@/utils/lib/inputValidator";
 import { getPostAction } from "@/utils/actions/getPostAction";
@@ -7,11 +7,13 @@ import { updateBlogAction } from "@/utils/actions/updateBlogAction";
 import { BlogClientSection, Section } from "@/type";
 import Sections from "./Sections";
 import Form from "next/form";
+import { AUTHORS, CATEGORIES } from "@/utils/lib/CONFIG";
 
 export default function EditBlog() {
   const [editMode, setEditMode] = useState(false);
   const [blogUrl, setBlogUrl] = useState("");
   const [sections, setSections] = useState<BlogClientSection[]>([]);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   const [getPostState, getPost, isGetting] = useActionState(getPostAction, {
     message: "",
@@ -39,8 +41,7 @@ export default function EditBlog() {
     });
   };
 
-  // ✅ When blog post is fetched, populate sections
-  React.useEffect(() => {
+  useEffect(() => {
     if (getPostState?.post?.sections && getPostState.post.sections.length > 0) {
       const sections = getPostState.post.sections.map((sec: Section) => ({
         ...sec,
@@ -53,7 +54,7 @@ export default function EditBlog() {
   }, [getPostState.post]);
 
   return (
-    <div className="bg-base-200 p-8 rounded-xl shadow-lg max-w-lg mx-auto mt-10">
+    <div className="bg-base-200 p-8 rounded-xl shadow-lg max-w-4xl mx-auto mt-10">
       <h2 className="text-2xl font-bold mb-6 text-center">Edit Blog Post</h2>
 
       {/* Search Input */}
@@ -84,18 +85,19 @@ export default function EditBlog() {
 
       {/* Found Blog Banner */}
       {getPostState?.post && !editMode && (
-        <div className="card bg-base-100 shadow-md border border-base-300 p-5">
-          <h3 className="text-lg font-semibold text-primary">
-            {getPostState.post.title}
-          </h3>
-          <p className="text-sm text-gray-500">{getPostState.blogUrl}</p>
+        <div className="card bg-base-100 shadow-md border p-5 border-gray-400 dark:border-gray-600">
+          <div className="flex gap-4 items-center">
+            <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-40 h-20 object-cover rounded-lg" />
+            <div>
+              <h3 className="text-lg font-semibold text-primary">{getPostState.post.title}</h3>
+              <p className="text-sm text-gray-500">{getPostState.blogUrl}</p>
+            </div>
 
-          <div className="flex justify-end mt-4">
             <button
-              className="btn btn-outline btn-warning flex items-center gap-2"
+              className="btn btn-outline justify-self-end btn-warning ml-auto"
               onClick={() => setEditMode(true)}
             >
-              <Pencil className="w-4 h-4" /> Edit
+              <Pencil className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -129,27 +131,35 @@ export default function EditBlog() {
           </div>
 
           {/* Author */}
-          <div className="flex flex-col gap-2">
-            <label className="label">Author</label>
-            <input
-              type="text"
-              name="author"
-              defaultValue={getPostState.post?.author}
-              className="input input-bordered w-full"
-              required
-            />
+          <div>
+            <label className="label font-semibold">Author</label>
+            <select name="author" className="select select-bordered w-full">
+              {
+                Array.from(Object.entries(AUTHORS)).map(([key, value]) => (
+                  <option key={key} value={value} disabled={key === '@select'} defaultValue={getPostState.post?.author}>
+                    {value}
+                  </option>
+                ))
+              }
+            </select>
           </div>
 
           {/* Category */}
           <div className="flex flex-col gap-2">
             <label className="label">Category</label>
-            <input
-              type="text"
-              name="category"
-              defaultValue={getPostState.post?.category}
-              className="input input-bordered w-full"
+            <select
+              name="categoryId"
+              className="select select-bordered w-full"
               required
-            />
+            >
+              {
+                Array.from(Object.entries(CATEGORIES)).map(([key, value]) => (
+                  <option key={key} value={key} disabled={key === 'SELECT'} defaultValue={getPostState.post?.category}>
+                    {value}
+                  </option>
+                ))
+              }
+            </select>
           </div>
 
           {/* 🧩 Dynamic Section Editor */}
@@ -165,18 +175,21 @@ export default function EditBlog() {
             </div>
           )}
 
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-center mt-6 gap-4">
             <button
-              type="submit"
-              className={`btn btn-success flex items-center gap-2 ${isUpdating ? "btn-disabled" : ""
-                }`}
+              type="button"
+              className={`btn btn-success flex items-center gap-2 ${isUpdating ? "btn-disabled" : ""}`}
+              onClick={() => modalRef.current?.showModal()}
             >
-              <Save className="w-4 h-4" />
-              Save Changes
+              {isUpdating ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                <div className="flex items-center gap-2"><Save className="w-4 h-4" /><span>Save Changes</span></div>
+              )}
             </button>
             <button
               type="button"
-              className="btn"
+              className="btn border border-gray-400 dark:border-gray-600"
               onClick={() => setEditMode(false)}
             >
               Cancel
@@ -191,6 +204,27 @@ export default function EditBlog() {
           <span>{getPostState?.message}</span>
         </div>
       )}
+
+      {/* Toast Message */}
+      {updateState.ok && (
+        <div className="toast toast-top toast-center">
+          <div className={`alert ${updateState?.ok ? 'alert-success' : 'alert-error'}`}>
+            <span>{updateState?.message}</span>
+          </div>
+        </div>
+      )}
+
+
+      {/* Under Development Message Modal */}
+      <dialog ref={modalRef} className="modal modal-middle">
+        <div className="modal-box mt-4">
+          <h3 className="font-bold text-lg">Under Development</h3>
+          <p className="py-4">This feature is currently under development. Please check back later.</p>
+          <div className="modal-action">
+            <button className="btn" onClick={() => modalRef.current?.close()}>Close</button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }
