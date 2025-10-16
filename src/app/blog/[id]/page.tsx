@@ -20,6 +20,28 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     creator: 'Ankur Rajbongshi',
     authors: [{ name: 'Ankur Rajbongshi' }, { name: 'Manabendra Nath' }],
     referrer: 'origin-when-cross-origin',
+    keywords: ['blog', 'tutorial', 'thought', 'idea', 'gyanrexa', 'ankur rajbongshi', 'manabendra nath'],
+    openGraph: {
+      title: post?.title,
+      description: extractDescription(post?.sections[0].paragraph!),
+      siteName: 'GyanRexa',
+      images: [
+        {
+          url: `${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${post?.sections[0].imgKey}`,
+          width: 1200,
+          height: 675,
+        },
+      ],
+      locale: 'en_US',
+      type: 'article'
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post?.title,
+      description: extractDescription(post?.sections[0].paragraph!),
+      images: [`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${post?.sections[0].imgKey}`],
+      creator: '@ankurrajbongshi',
+    }
   }
 }
 

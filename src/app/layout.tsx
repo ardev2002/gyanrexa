@@ -17,14 +17,13 @@ export const metadata: Metadata = {
     title: 'GyanRexa',
     description: 'Sharing thoughts, tutorials, and ideas with the world. Stay inspired!',
     siteName: 'GyanRexa',
-    // url: 'https://gyanrexa.com',
-    // images: [
-    //   {
-    //     url: 'https://gyanrexa.com/og.png',
-    //     width: 800,
-    //     height: 600,
-    //   },
-    // ],
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/seo/GyanRexa.webp`,
+        width: 1200,
+        height: 675,
+      },
+    ],
     locale: 'en_US',
     type: 'website'
   },
@@ -32,11 +31,10 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'GyanRexa',
     description: 'Sharing thoughts, tutorials, and ideas with the world. Stay inspired!',
-    // images: ['https://gyanrexa.com/og.png'],
+    images: [`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/seo/GyanRexa.webp`],
     creator: '@ankurrajbongshi',
   }
 };
-
 export default async function RootLayout({
   children,
 }: Readonly<{
