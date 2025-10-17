@@ -46,17 +46,17 @@ export default function DeleteBlog() {
       {/* Post Display */}
       {getPostState?.post ? (
         <div className="card bg-base-100 shadow-md p-5 border border-base-300 w-full">
-          <div className="flex gap-4 items-center">
-            <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-40 h-20 object-cover rounded-lg" />
+          <div className="flex gap-4 items-center flex-wrap justify-center">
+            <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-full sm:w-40 h-20 object-cover rounded-lg" />
             <div>
               <h3 className="font-semibold text-lg text-primary cursor-pointer hover:underline">{getPostState?.post.title}</h3>
               <p className="text-sm text-gray-500 mt-1">{getPostState?.blogUrl}</p>
             </div>
-            <button className="btn justify-self-end btn-error btn-sm ml-auto" onClick={() => deleteModalRef.current?.showModal()}>
+            <button className="inline-block btn btn-error btn-sm" onClick={() => deleteModalRef.current?.showModal()}>
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
-
+          
           <dialog ref={deleteModalRef} className="modal modal-middle">
             <form action={deleteBlog}>
               <div className="modal-box w-full mt-4 flex flex-col items-center gap-3">

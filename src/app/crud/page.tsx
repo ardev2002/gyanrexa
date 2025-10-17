@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import AddBlogPage from "@/components/crud/Addblog";
 import EditBlog from "@/components/crud/EditBlog";
 import DeleteBlog from "@/components/crud/DeleteBlog";
-import { CirclePlus, EditIcon, Trash2, Image, Info, Lightbulb } from "lucide-react";
+import { CirclePlus, EditIcon, Trash2, Image, Info } from "lucide-react";
 
 export const dynamic = "force-static";
 
@@ -31,10 +31,10 @@ export default function CrudPage() {
     <div className="mx-auto p-6">
       {/* --- Info Banner (DaisyUI Styled) --- */}
       <div className="relative overflow-hidden mb-8">
-        <div className="alert alert-info text-gray-200 shadow-md flex items-center justify-center gap-2 py-4 rounded-lg">
+        <div className="alert alert-info text-gray-200 shadow-md flex items-center justify-center py-4 rounded-lg">
           <Info className="w-5 h-5 shrink-0 text-blue-600 dark:text-blue-400" />
           <span className="text-sm md:text-base font-medium text-center justify-center gap-1 flex items-center flex-wrap">
-            <strong>Recommended image sizes: </strong>
+            <strong className="-mt-1">Recommended image sizes: </strong>
             <div className="flex flex-wrap gap-2 items-center justify-center">
               <span className="badge badge-outline mx-1 text-xs md:text-sm flex items-center gap-1">
                 <Image className="w-5 h-5 text-white" /> <span>Blog Card: 1200x630px</span>

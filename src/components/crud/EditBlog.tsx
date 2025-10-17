@@ -86,15 +86,15 @@ export default function EditBlog() {
       {/* Found Blog Banner */}
       {getPostState?.post && !editMode && (
         <div className="card bg-base-100 shadow-md border p-5 border-gray-400 dark:border-gray-600">
-          <div className="flex gap-4 items-center">
-            <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-40 h-20 object-cover rounded-lg" />
+          <div className="flex gap-4 items-center flex-wrap justify-center">
+            <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-full sm:w-40 h-20 object-cover rounded-lg" />
             <div>
               <h3 className="text-lg font-semibold text-primary">{getPostState.post.title}</h3>
               <p className="text-sm text-gray-500">{getPostState.blogUrl}</p>
             </div>
 
             <button
-              className="btn btn-outline justify-self-end btn-warning ml-auto"
+              className="inline-block btn btn-outline btn-warning"
               onClick={() => setEditMode(true)}
             >
               <Pencil className="w-4 h-4" />
