@@ -1,7 +1,6 @@
 import PostsGrid from "@/components/PostsGrid";
 import { getPostsWithSections } from "@/utils/lib/getPosts";
 
-
 export default async function HomePage() {
   const { posts, nextToken } = await getPostsWithSections(10);
 

@@ -1,17 +1,18 @@
 "use client";
-import React, { useActionState, useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import { publishBlogAction } from "@/utils/actions/publishBlogAction";
 import Sections from "@/components/crud/Sections";
-import { Info, Rocket, Search, CircleCheck, CircleX } from "lucide-react";
+import { Info, Rocket, Search, CircleCheck, CircleX, Plus, X } from "lucide-react";
 import { inputValidator } from "@/utils/lib/inputValidator";
 import { BlogClientSection } from "@/type";
 import { isBlogURLAvailableAction } from "@/utils/actions/isBlogURLAvailableAction";
-import { CATEGORIES } from "@/utils/lib/CONFIG";
+import { AUTHORS, CATEGORIES } from "@/utils/lib/CONFIG";
 
 export default function AddBlogPage() {
   const [blogUrl, setBlogUrl] = useState('');
-  const [recentState, formAction, isPublishing] = useActionState(publishBlogAction, { message: '', isSubmitted: false, ok: false });
+  const [publishState, formAction, isPublishing] = useActionState(publishBlogAction, { message: '', isSubmitted: false, ok: false });
   const [checkState, checkBlogURL, isChecking] = useActionState(isBlogURLAvailableAction, { message: '', isSubmitted: false, ok: false });
+  const [showToast, setShowToast] = useState(false);
   const [sections, setSections] = useState<BlogClientSection[]>([
     {
       subheading: "",
@@ -37,6 +38,24 @@ export default function AddBlogPage() {
     ]);
   };
 
+  useEffect(() => {
+    if (publishState.isSubmitted) {
+      setShowToast(true);
+      publishState.isSubmitted = false;
+      checkState.blogUrl = "";
+    }
+  }, [publishState])
+
+  useEffect(() => {
+    let toastTimeout: NodeJS.Timeout;
+    if (showToast) {
+      toastTimeout = setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    }
+    return () => clearTimeout(toastTimeout)
+  })
+
   const removeLastSection = () => {
     if (sections.length === 1) {
       alert("At least one section is required.");
@@ -45,7 +64,7 @@ export default function AddBlogPage() {
     const updated = sections
       .slice(0, -1)
       .map((sec, i) => ({ ...sec, order: i + 1 }));
-      setSections(updated);
+    setSections(updated);
   };
 
   const handleSectionChange = (index: number, field: string, value: any) => {
@@ -110,7 +129,7 @@ export default function AddBlogPage() {
               name="title"
               placeholder="Enter blog title"
               className="input input-bordered border-gray-400 dark:border-gray-600 w-full pr-10"
-              defaultValue={recentState?.fields?.title}
+              defaultValue={publishState?.fields?.title}
               onKeyDown={e => inputValidator(e, 'title')}
               required
             />
@@ -132,11 +151,11 @@ export default function AddBlogPage() {
             required
           >
             {
-                Array.from(Object.entries(CATEGORIES)).map(([key, value]) => (
-                  <option key={key} value={key} disabled={key === 'SELECT'} defaultValue={'Select'}>
-                    {value}
-                  </option>
-                ))
+              Array.from(Object.entries(CATEGORIES)).map(([key, value]) => (
+                <option key={key} value={key} disabled={key === 'SELECT'} defaultValue={'Select'}>
+                  {value}
+                </option>
+              ))
             }
           </select>
         </div>
@@ -145,11 +164,13 @@ export default function AddBlogPage() {
         <div>
           <label className="label font-semibold">Author</label>
           <select name="author" className="select select-bordered w-full">
-            <option disabled defaultValue={"select"}>
-              Select Author
-            </option>
-            <option value="Ankur_Rajbongshi">Ankur Rajbongshi</option>
-            <option value="Manabendra_Nath">Manabendra Nath</option>
+            {
+              Array.from(Object.entries(AUTHORS)).map(([key, value]) => (
+                <option key={key} value={value} disabled={key === '@select'} defaultValue={'Select'}>
+                  {value}
+                </option>
+              ))
+            }
           </select>
         </div>
 
@@ -175,14 +196,14 @@ export default function AddBlogPage() {
             onClick={addSection}
             className="btn btn-outline btn-primary"
           >
-            ➕ Add Another Section
+            <Plus/><span>Add Another Section</span>
           </button>
           <button
             type="button"
             onClick={removeLastSection}
             className="btn btn-outline btn-error"
           >
-            ❌ Remove Last Section
+            <X/><span>Remove Last Section</span>
           </button>
         </div>
 
@@ -194,10 +215,12 @@ export default function AddBlogPage() {
       </form>
 
       {/* Toast Message */}
-      {recentState?.isSubmitted && (
-        <div className="toast toast-top toast-center">
-          <div className={`alert ${recentState?.ok ? 'alert-success' : 'alert-error'}`}>
-            <span>{recentState?.message}</span>
+      {showToast && (
+        <div className={`relative z-50 transition-opacity duration-300 ${showToast ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="toast toast-top toast-center">
+            <div className={`alert ${publishState?.ok ? 'alert-success' : 'alert-error'}`}>
+              <span>{publishState?.message}</span>
+            </div>
           </div>
         </div>
       )}

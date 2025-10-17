@@ -41,7 +41,7 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
       setUploading(prev => [...prev, true]);
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('url', signedUrl[index]);
+      formData.append('signedUrl', signedUrl[index]);
       const { ok } = await uploadImageAction(formData);
       if (ok) {
         handleSectionChange(index, 'imgKey', imgKeys[index]);
@@ -136,7 +136,7 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
             </div>
 
             {(section.previewUrl || section.imgKey) && (
-              <div className="mt-4 flex items-center gap-6 justify-center">
+              <div className="mt-4 flex items-center gap-6 justify-center flex-wrap">
                 <img
                   src={section.previewUrl || `${process.env.NEXT_PUBLIC_AWS_BUCKET_URL}/${section.imgKey}`}
                   alt="Preview"

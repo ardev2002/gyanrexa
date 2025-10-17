@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ImageRenderer from "@/components/ImageRenderer";
 import { PostWithSections } from "@/type";
+import { formatDate } from "@/utils/lib/formatDate";
 
 
 
@@ -55,11 +56,7 @@ export default function PostsGrid({ initialPosts, initialNextToken }: PostsGridP
           const firstSection = post.sections?.[0];
 
           // Format the date
-          const postedDate = post.createdAt && new Date(post.createdAt).toLocaleDateString("en-IN", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
+          const postedDate = formatDate(post.createdAt!);
           return (
             <Link
               key={post.blogUrl}
@@ -68,7 +65,7 @@ export default function PostsGrid({ initialPosts, initialNextToken }: PostsGridP
                 group block rounded-xl border
                 bg-base-200 dark:bg-gray-800
                 border-gray-300 dark:border-gray-700
-                shadow-md hover:shadow-lg transition overflow-hidden
+                shadow-md hover:shadow-xl transition overflow-hidden
               "
             >
               {/* Thumbnail */}

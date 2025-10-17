@@ -1,6 +1,6 @@
 import { GetCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoClient } from "@/utils/lib/dynamoClient";
-import { CalendarDays, Dot } from "lucide-react";
+import { CalendarDays, Dot, X } from "lucide-react";
 import SectionImageRenderer from "@/components/SectionImageRenderer";
 import BlogSidebar from "@/components/BlogSidebar";
 import { PostWithSections, Section } from "@/type";
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: post?.title,
       description: extractDescription(post?.sections[0].paragraph!),
       images: [`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${post?.sections[0].imgKey}`],
-      creator: '@ankurrajbongshi',
+      creator: '@webdevankur',
     }
   }
 }
@@ -60,7 +60,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
     return (
       <main className="max-w-6xl mx-auto p-6">
         <div className="alert alert-error shadow-lg">
-          <span>❌ Blog not found</span>
+          <div className="flex items-center gap-1"><X/><span>Blog not found</span></div>
         </div>
       </main>
     );
@@ -80,6 +80,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
   const sections = (sectionRes.Items as Section[])?.sort((a, b) => a.order - b.order) ?? [];
 
   const { post: recentPosts } = await getRecentPosts();
+  const recentPostsExceptCurrent = recentPosts.filter((p) => p.blogUrl !== slugFromUrl);
   const postedDate = formatDate(post.createdAt);
 
   const isLatest = (() => {
@@ -138,13 +139,12 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
                 <section
                   key={sec.order}
                   className="
-          rounded-xl 
-          border border-gray-200 dark:border-gray-700 
-          shadow-sm 
-          bg-base-100 dark:bg-base-200 
-          px-6 py-8 
-          transition-colors duration-300
-        "
+                  rounded-xl 
+                  border border-gray-200 dark:border-gray-700 
+                  shadow-sm 
+                  bg-base-100 dark:bg-base-200 
+                  px-6 py-8 
+                  transition-colors duration-300"
                 >
                   {sec.imgKey && (
                     <div className="mb-6 rounded-lg overflow-hidden">
@@ -167,7 +167,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
                     {parsed.paras.map((p, i) => (
                       <p
                         key={i}
-                        className="pl-2 sm:pl-4 md:pl-6 indent-6 text-[1.05rem]"
+                        className={`pl-2 sm:pl-4 md:pl-6 indent-6 text-[1.05rem]`}
                       >
                         {p}
                       </p>
@@ -201,7 +201,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
 
         </article>
 
-        <BlogSidebar recentPosts={recentPosts} />
+        <BlogSidebar recentPosts={recentPostsExceptCurrent} />
       </div>
     </main>
   );

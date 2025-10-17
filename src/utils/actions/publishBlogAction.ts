@@ -11,8 +11,6 @@ export async function publishBlogAction(prevState: any, formData: FormData) {
     const author = formData.get("author") as string;
     const sections = JSON.parse(formData.get("sections") as string);
     const time = new Date().toISOString();
-    console.log('Sections: ', sections)
-    return
     const fields = { title, blogUrl, category, author, time, sections };
     try {
         await dynamoClient.send(new PutCommand({
@@ -32,6 +30,7 @@ export async function publishBlogAction(prevState: any, formData: FormData) {
                 PutRequest: {
                     Item: {
                         blogUrl,
+                        order: section.order,
                         subheading: section.subheading,
                         paragraph: section.paragraph,
                         imgKey: section.imgKey,
