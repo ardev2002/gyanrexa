@@ -6,6 +6,7 @@ import { Info, Rocket, Search, CircleCheck, CircleX } from "lucide-react";
 import { inputValidator } from "@/utils/lib/inputValidator";
 import { BlogClientSection } from "@/type";
 import { isBlogURLAvailableAction } from "@/utils/actions/isBlogURLAvailableAction";
+import { CATEGORIES } from "@/utils/lib/CONFIG";
 
 export default function AddBlogPage() {
   const [blogUrl, setBlogUrl] = useState('');
@@ -72,6 +73,7 @@ export default function AddBlogPage() {
             />
             <button
               type="submit"
+              disabled={isChecking || blogUrl === '' || checkState.blogUrl === blogUrl}
               className={`btn btn-primary join-item ${isChecking || blogUrl === '' || checkState.blogUrl === blogUrl ? 'btn-disabled' : ''}`}
             >
               {isChecking ? (
@@ -129,16 +131,13 @@ export default function AddBlogPage() {
             className="select select-bordered w-full"
             required
           >
-            <option disabled defaultValue={"select"}>
-              Select category
-            </option>
-            <option value="MOBILES">Mobiles</option>
-            <option value="TECHNOLOGY">Technology</option>
-            <option value="TIPS_AND_TRICKS">Tips & Tricks</option>
-            <option value="LIFESTYLE">Lifestyle</option>
-            <option value="HEALTH_AND_WELLNESS">Health & Wellness</option>
-            <option value="ENTERTAINMENT">Entertainment</option>
-            <option value="SPORTS">Sports</option>
+            {
+                Array.from(Object.entries(CATEGORIES)).map(([key, value]) => (
+                  <option key={key} value={key} disabled={key === 'SELECT'} defaultValue={'Select'}>
+                    {value}
+                  </option>
+                ))
+            }
           </select>
         </div>
 

@@ -6,7 +6,7 @@ export async function isBlogURLAvailableAction(prevState: any, formData: FormDat
     if (!blogUrl) return { message: "Missing blog URL", isSubmitted: true, ok: false };
     try {
         const isAvailable = await isBlogURLAvailable(blogUrl);
-        return { message: `${isAvailable ? "Available" : "Not Available"}`, isSubmitted: true, ok: true, blogUrl };
+        return { message: `${isAvailable ? "Available" : "Not Available"}`, isSubmitted: true, ok: isAvailable, blogUrl };
     } catch (error: any) {
         return { message: error.message, isSubmitted: true, ok: false };
     }
