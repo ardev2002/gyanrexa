@@ -48,7 +48,7 @@ export default function CrudPage() {
         </div>
 
         <div className="text-center mt-2 text-sm opacity-70 flex items-center justify-center">
-          <Lightbulb className="text-warning w-6 h-6" /> <span>Use optimized JPG or WEBP images for faster loading — maintain aspect ratio</span>
+          <span>Use optimized JPG or WEBP images for faster loading — maintain aspect ratio</span>
         </div>
       </div>
       {/* --- CRUD Buttons --- */}
