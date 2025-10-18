@@ -44,7 +44,7 @@ export default function DeleteBlog() {
               placeholder="Enter blog URL"
               className="input input-bordered border-gray-400 dark:border-gray-600 join-item w-full"
               onChange={e => setBlogUrl(e.target.value)}
-              onKeyDown={e => inputValidator(e, 'url')}
+              onBeforeInput={e => inputValidator(e, 'url')}
             />
             <button type="submit" className={`btn btn-primary join-item ${isGetting == true || blogUrl === '' || getPostState.blogUrl === blogUrl ? 'btn-disabled' : ''}`}>
               {isGetting ? (
