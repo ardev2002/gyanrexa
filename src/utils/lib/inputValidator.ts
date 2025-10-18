@@ -2,7 +2,6 @@ export const inputValidator = (
     e: React.InputEvent<HTMLInputElement>,
     type?: "title" | "url"
 ) => {
-    console.log(e.currentTarget.selectionStart, e.currentTarget.selectionEnd)
     const typedValue = e.data!;
     const titleRegex = /^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]$/;
     const urlRegex = /^[a-zA-Z0-9\-]$/;

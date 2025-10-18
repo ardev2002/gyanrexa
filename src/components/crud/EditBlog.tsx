@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useActionState, useEffect, useRef } from "react";
-import { Search, Pencil, Save } from "lucide-react";
+import { Search, Pencil, Save, UserPen, CalendarDays, Pen } from "lucide-react";
 import { inputValidator } from "@/utils/lib/inputValidator";
 import { getPostAction } from "@/utils/actions/getPostAction";
 import { updateBlogAction } from "@/utils/actions/updateBlogAction";
@@ -8,6 +8,8 @@ import { BlogClientSection, Section } from "@/type";
 import Sections from "./Sections";
 import Form from "next/form";
 import { AUTHORS, CATEGORIES } from "@/utils/lib/CONFIG";
+import ImageRenderer from "../ImageRenderer";
+import Link from "next/link";
 
 export default function EditBlog() {
   const [editMode, setEditMode] = useState(false);
@@ -54,8 +56,8 @@ export default function EditBlog() {
   }, [getPostState.post]);
 
   return (
-    <div className="bg-base-200 p-8 rounded-xl shadow-lg max-w-4xl mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-center">Edit Blog Post</h2>
+    <div className="bg-base-200 p-6 sm:p-10 rounded-xl shadow-lg max-w-3xl mx-auto mt-10">
+      <h2 className="text-3xl font-bold mb-8 text-center text-primary">Edit Blog Post</h2>
 
       {/* Search Input */}
       <Form action={getPost}>
@@ -71,34 +73,61 @@ export default function EditBlog() {
           />
           <button
             type="submit"
-            className={`btn btn-warning join-item ${isGetting || blogUrl === "" || getPostState.blogUrl === blogUrl ? "btn-disabled" : ""
-              }`}
+            disabled={isGetting || blogUrl === "" || getPostState.blogUrl === blogUrl}
+            className={`btn btn-warning join-item ${isGetting || blogUrl === "" || getPostState.blogUrl === blogUrl ? "btn-disabled" : ""}`}
           >
-            {isGetting ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              <Search className="w-5 h-5" />
-            )}
+            <Search className="w-5 h-5" />
           </button>
         </div>
       </Form>
-
+      {
+        isGetting && (
+          <div className="flex justify-center">
+            <span className="loading loading-dots loading-xl"></span>
+          </div>
+        )
+      }
       {/* Found Blog Banner */}
-      {getPostState?.post && !editMode && (
+      {getPostState?.post && (
         <div className="card bg-base-100 shadow-md border p-5 border-gray-400 dark:border-gray-600">
           <div className="flex gap-4 items-center flex-wrap justify-center">
-            <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-full sm:w-40 h-20 object-cover rounded-lg" />
-            <div>
-              <h3 className="text-lg font-semibold text-primary">{getPostState.post.title}</h3>
-              <p className="text-sm text-gray-500">{getPostState.blogUrl}</p>
-            </div>
+            <ImageRenderer variant="small" imgKey={`${getPostState.post.sections[0].imgKey}`} alt={getPostState.post.title} />
+            {/* Blog Content */}
+            <div className="card-body">
+              <h2 className="card-title text-2xl sm:text-3xl font-bold text-primary hover:underline cursor-pointer">
+                <Link href={`/blog/${getPostState.post.blogUrl}`}>{getPostState.post.title}</Link>
+              </h2>
 
-            <button
-              className="inline-block btn btn-outline btn-warning"
-              onClick={() => setEditMode(true)}
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
+              {/* Meta Info */}
+              <div className="flex sm:flex-row justify-between items-start sm:items-center mt-6 gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-3">
+                  <div className="avatar">
+                    <div className="w-8 flex justify-center items-center rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                      <UserPen size={24} />
+                    </div>
+                  </div>
+                  <span className="flex items-center gap-1">
+                    {getPostState.post.author}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <CalendarDays size={16} />
+                  <span>{new Date(getPostState.post.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Delete Button */}
+              <div className="card-actions justify-center mt-6">
+                <button
+                  className={`btn btn-error btn-md flex items-center gap-2 ${editMode || isUpdating ? 'btn-disabled' : ''}`}
+                  onClick={() => setEditMode(!editMode)}
+                  disabled={editMode || isUpdating}
+                >
+                  <Pen className="w-4 h-4" /> Edit Blog
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -109,7 +138,6 @@ export default function EditBlog() {
           action={updateBlog}
           className="bg-base-100 p-6 rounded-lg shadow-md border border-base-300 mt-6 space-y-5"
         >
-          <input type="hidden" name="crudType" value={"UPDATE"} />
           <input
             type="text"
             name="blogUrl"

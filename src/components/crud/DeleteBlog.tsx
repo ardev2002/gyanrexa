@@ -1,19 +1,24 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, UserPen, CalendarDays } from "lucide-react";
 import { inputValidator } from "@/utils/lib/inputValidator";
 import { getPostAction } from "@/utils/actions/getPostAction";
 import { deleteBlogAction } from "@/utils/actions/deleteBlogAction";
+import Link from "next/link";
+import ImageRenderer from "../ImageRenderer";
+import Image from "next/image";
 
 export default function DeleteBlog() {
-  const [getPostState, getPost, isGetting] = useActionState(getPostAction, { message: '', isSubmitted: false, ok: false, blogUrl: '' });
-  const [deleteBlogState, deleteBlog, isDeleting] = useActionState(deleteBlogAction, { message: '', isSubmitted: false, ok: false });
-  const [blogUrl, setBlogUrl] = useState('');
+  const [getPostState, getPost, isGetting] = useActionState(getPostAction, { message: "", isSubmitted: false, ok: false, blogUrl: "" });
+  const [deleteBlogState, deleteBlog, isDeleting] = useActionState(deleteBlogAction, { message: "", isSubmitted: false, ok: false });
+  const [blogUrl, setBlogUrl] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const deleteModalRef = useRef<HTMLDialogElement>(null);
+
   useEffect(() => {
     if (deleteBlogState?.isSubmitted) {
-      deleteModalRef.current?.close()
+      deleteModalRef.current?.close();
       setShowToast(true);
       getPostState.isSubmitted = false;
     }
@@ -22,90 +27,118 @@ export default function DeleteBlog() {
   useEffect(() => {
     let toastTimeout: NodeJS.Timeout;
     if (showToast) {
-      toastTimeout = setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
+      toastTimeout = setTimeout(() => setShowToast(false), 3000);
     }
     return () => clearTimeout(toastTimeout);
-  }, [showToast])
+  }, [showToast]);
 
   return (
     <>
-      <div className="bg-base-200 p-8 rounded-xl shadow-lg max-w-4xl mx-auto mt-10">
-        <h2 className="text-2xl font-bold mb-6 text-center">Delete Blog Post</h2>
+      <div className="bg-base-200 p-6 sm:p-10 rounded-xl shadow-lg max-w-3xl mx-auto mt-10">
+        <h2 className="text-3xl font-bold mb-8 text-center text-primary">Delete Blog Post</h2>
 
         {/* Search Input */}
-        <form action={getPost}>
-          <div className="join w-full mb-6">
+        <form action={getPost} className="mb-8">
+          <div className="join w-full">
             <input
               name="blogUrl"
               type="text"
               value={blogUrl}
               placeholder="Enter blog URL"
               className="input input-bordered border-gray-400 dark:border-gray-600 join-item w-full"
-              onChange={e => setBlogUrl(e.target.value)}
-              onBeforeInput={e => inputValidator(e, 'url')}
+              onChange={(e) => setBlogUrl(e.target.value)}
+              onBeforeInput={(e) => inputValidator(e, "url")}
             />
-            <button type="submit" className={`btn btn-primary join-item ${isGetting == true || blogUrl === '' || getPostState.blogUrl === blogUrl ? 'btn-disabled' : ''}`}>
-              {isGetting ? (
-                <span className="loading loading-spinner loading-sm"></span>
-              ) : (
-                <Search className="w-5 h-5" />
-              )}
+            <button
+              type="submit"
+              className={`btn btn-primary join-item ${isGetting || blogUrl === "" || getPostState.blogUrl === blogUrl ? "btn-disabled" : ""}`}
+              disabled={isGetting || blogUrl === "" || getPostState.blogUrl === blogUrl}
+            >
+              <Search className="w-5 h-5" />
             </button>
           </div>
         </form>
 
-        {/* Post Display */}
+        {
+          isGetting && (
+            <div className="flex justify-center">
+              <span className="loading loading-dots loading-xl"></span>
+            </div>
+          )
+        }
+
+        {/* Blog Card */}
         {getPostState?.post && (
-          <div className="card bg-base-100 shadow-md p-5 border border-base-300 w-full">
-            <div className="flex gap-4 items-center flex-wrap justify-center">
-              <img src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_URL!}/${getPostState?.post.sections[0].imgKey}`} alt={getPostState?.post.title} className="w-full sm:w-40 h-20 object-cover rounded-lg" />
-              <div>
-                <h3 className="font-semibold text-lg text-primary cursor-pointer hover:underline">{getPostState?.post.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{getPostState?.blogUrl}</p>
-              </div>
-              <button className="inline-block btn btn-error btn-sm" onClick={() => deleteModalRef.current?.showModal()}>
-                <Trash2 className="w-4 h-4" />
-              </button>
+          <div className="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden">
+            {/* Blog Image */}
+            <div>
+              <ImageRenderer variant="small" imgKey={`${getPostState.post.sections[0].imgKey}`} alt={getPostState.post.title} />
             </div>
 
-            <dialog ref={deleteModalRef} className="modal modal-middle">
-              <form action={deleteBlog}>
-                <div className="modal-box w-full mt-4 flex flex-col items-center gap-3">
-                  <input type="hidden" name="blogUrl" value={getPostState?.blogUrl} />
-                  <div className="flex flex-col gap-0.5 text-center mb-2">
-                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Are you sure?</h3>
-                    <p className="text-sm text-gray-500">This action cannot be undone.</p>
-                  </div>
+            {/* Blog Content */}
+            <div className="card-body">
+              <h2 className="card-title text-2xl sm:text-3xl font-bold text-primary hover:underline cursor-pointer">
+                <Link href={`/blog/${getPostState.post.blogUrl}`}>{getPostState.post.title}</Link>
+              </h2>
 
-                  <div className="flex gap-4">
-                    <button
-                      type="submit"
-                      className={`btn btn-error flex items-center gap-2 ${isDeleting ? 'btn-disabled' : ''}`}
-                    >
-                      {
-                        isDeleting ? (<span className="loading loading-spinner loading-sm"></span>) : (<span className="flex items-center gap-2"><Trash2 className="w-4 h-4" /> Delete</span>)
-                      }
-                    </button>
-                    <button type="button" className="btn" onClick={() => deleteModalRef.current?.close()}>
-                      Cancel
-                    </button>
+              {/* Meta Info */}
+              <div className="flex sm:flex-row justify-between items-start sm:items-center mt-6 gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-3">
+                  <div className="avatar">
+                    <div className="w-8 flex justify-center items-center rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                      <UserPen size={24} />
+                    </div>
                   </div>
-
+                  <span className="flex items-center gap-1">
+                    {getPostState.post.author}
+                  </span>
                 </div>
-              </form>
-            </dialog>
+
+                <div className="flex items-center gap-2">
+                  <CalendarDays size={16} />
+                  <span>{new Date(getPostState.post.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Delete Button */}
+              <div className="card-actions justify-center mt-6">
+                <button
+                  className="btn btn-error btn-md flex items-center gap-2"
+                  onClick={() => deleteModalRef.current?.showModal()}
+                >
+                  <Trash2 className="w-4 h-4" /> Delete Blog
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
 
-      {showToast && (
-        <div className={`relative z-50 transition-opacity duration-300 ${showToast ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="toast toast-top toast-center">
-            <div className={`alert ${deleteBlogState?.ok ? 'alert-success' : 'alert-error'}`}>
-              <span>{deleteBlogState?.message}</span>
+      {/* Delete Confirmation Modal */}
+      <dialog ref={deleteModalRef} className="modal modal-middle">
+        <form action={deleteBlog}>
+          <div className="modal-box text-center space-y-4">
+            <input type="hidden" name="blogUrl" value={getPostState?.blogUrl} />
+            <h3 className="font-semibold text-lg text-gray-700 dark:text-gray-200">Are you sure?</h3>
+            <p className="text-sm text-gray-500">This action cannot be undone.</p>
+
+            <div className="flex justify-center gap-4 mt-4">
+              <button type="submit" className={`btn btn-error ${isDeleting ? "btn-disabled" : ""}`}>
+                {isDeleting ? <span className="loading loading-spinner loading-sm"></span> : "Yes, Delete"}
+              </button>
+              <button type="button" className="btn" onClick={() => deleteModalRef.current?.close()}>
+                Cancel
+              </button>
             </div>
+          </div>
+        </form>
+      </dialog>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="toast toast-top toast-center z-50">
+          <div className={`alert ${deleteBlogState?.ok ? "alert-success" : "alert-error"}`}>
+            <span>{deleteBlogState?.message}</span>
           </div>
         </div>
       )}

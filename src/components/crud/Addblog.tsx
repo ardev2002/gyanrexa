@@ -75,7 +75,7 @@ export default function AddBlogPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-base-200 text-base-content">
-      <h1 className="text-2xl font-bold mb-6 text-center">Add New Blog Post</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center text-primary">Add New Blog Post</h1>
 
       <form action={checkBlogURL}>
         <label className="label font-semibold">Blog Url</label>

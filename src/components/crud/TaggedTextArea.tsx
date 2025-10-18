@@ -77,8 +77,17 @@ export default function TaggedTextarea({ value, onChange }: any) {
         const start = textarea.selectionStart ?? 0;
         const end = textarea.selectionEnd ?? start;
 
-        // Replace '#' (if exists before cursor) with selected tag
-        const before = value.substring(0, start - 1);
+        // Find start of current line
+        const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+
+        const charBeforeCursor = start > 0 ? value[start - 1] : "";
+        let before: string;
+        if (charBeforeCursor === "#") {
+            before = value.substring(0, start - 1);
+        } else {
+            before = value.substring(0, lineStart);
+        }
+
         const after = value.substring(end);
         const newValue = before + tag + ": " + after;
 
@@ -87,31 +96,45 @@ export default function TaggedTextarea({ value, onChange }: any) {
 
         setTimeout(() => {
             const pos = before.length + tag.length + 2;
-            textarea.selectionStart = textarea.selectionEnd = pos;
-            textarea.focus();
+            if (textarea) {
+                textarea.selectionStart = textarea.selectionEnd = pos;
+                textarea.focus();
+            }
+            const insertedLineIndex = before.split("\n").length - 1;
+            setLastSuggestionLine(insertedLineIndex);
         }, 0);
     };
 
-    /** Paste handler — auto reformat pasted content */
+    /** ✨ Improved Paste Handler */
     const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
         e.preventDefault();
         let pasted = e.clipboardData.getData("text");
 
+        // Split into lines and handle empty lines properly
         const formatted = pasted
             .split(/\r?\n/)
             .map((line) => {
-                const hasTag = TAGS.some((tag) => line.trim().startsWith(tag + ":"));
+                const trimmed = line.trim();
+
+                // Preserve blank lines without adding a tag
+                if (trimmed === "") return "";
+
+                // If already has a tag, keep it clean
+                const hasTag = TAGS.some((tag) => trimmed.startsWith(tag + ":"));
                 if (hasTag) {
-                    // Remove any extra tags within the same line
-                    const clean = line.replace(
+                    const clean = trimmed.replace(
                         new RegExp(`(?!^)(${TAGS.join("|")})[:]`, "g"),
                         ""
                     );
-                    return clean.trim();
+                    return clean;
                 }
-                return `${TAGS[0]}: ${line.trim()}`;
+
+                // Otherwise, add a default tag
+                return `${TAGS[0]}: ${trimmed}`;
             })
-            .join("\n");
+            // Join with \n but also remove consecutive blank lines at end
+            .join("\n")
+            .replace(/\n{3,}/g, "\n"); // collapse 3+ newlines into just 2
 
         onChange(formatted);
     };

@@ -167,7 +167,7 @@ export default async function Page(props: PageProps<"/blog/[id]">) {
                     {parsed.paras.map((p, i) => (
                       <p
                         key={i}
-                        className={`pl-2 sm:pl-4 md:pl-6 indent-6 text-[1.05rem]`}
+                        className={`${i !== 0 ? 'pl-6' : ''} text-[1rem]`}
                       >
                         {p}
                       </p>
