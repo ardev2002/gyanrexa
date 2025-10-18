@@ -7,7 +7,7 @@ import { POSTS_TABLE } from "../lib/CONFIG";
 export async function publishBlogAction(prevState: any, formData: FormData) {
     const title = formData.get("title") as string;
     const blogUrl = formData.get("blogUrl") as string;
-    const category = formData.get("categoryId") as 'MOBILES' | 'TECHNOLOGY' | 'TIPS_AND_TRICKS' | 'LIFESTYLE' | 'HEALTH_AND_WELLNESS' | 'ENTERTAINMENT' | 'SPORTS';
+    const category = formData.get("category") as 'MOBILES' | 'TECHNOLOGY' | 'TIPS_AND_TRICKS' | 'LIFESTYLE' | 'HEALTH_AND_WELLNESS' | 'ENTERTAINMENT' | 'SPORTS';
     const author = formData.get("author") as string;
     const sections = JSON.parse(formData.get("sections") as string);
     const time = new Date().toISOString();

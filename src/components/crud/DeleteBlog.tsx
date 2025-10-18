@@ -6,14 +6,12 @@ import { getPostAction } from "@/utils/actions/getPostAction";
 import { deleteBlogAction } from "@/utils/actions/deleteBlogAction";
 import Link from "next/link";
 import ImageRenderer from "../ImageRenderer";
-import Image from "next/image";
 
 export default function DeleteBlog() {
   const [getPostState, getPost, isGetting] = useActionState(getPostAction, { message: "", isSubmitted: false, ok: false, blogUrl: "" });
   const [deleteBlogState, deleteBlog, isDeleting] = useActionState(deleteBlogAction, { message: "", isSubmitted: false, ok: false });
   const [blogUrl, setBlogUrl] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [imgLoaded, setImgLoaded] = useState(false);
   const deleteModalRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -67,6 +65,14 @@ export default function DeleteBlog() {
           )
         }
 
+        {
+          getPostState.isSubmitted && !getPostState.ok && (
+            <div className="alert alert-error">
+              <span>{getPostState.message}</span>
+            </div>
+          )
+        }
+        
         {/* Blog Card */}
         {getPostState?.post && (
           <div className="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden">
