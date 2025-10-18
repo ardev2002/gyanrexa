@@ -1,80 +1,60 @@
-export const textareaValidator = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+export const textareaValidator = (e: React.InputEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget;
-    const cursorPos = textarea.selectionStart;
     const value = textarea.value;
+    const lines = value.split("\n");
 
-    // Find start and end of current line
-    const lastNewlineIndex = value.lastIndexOf("\n", cursorPos - 1);
-    const nextNewlineIndex = value.indexOf("\n", cursorPos);
-    const lineStart = lastNewlineIndex + 1;
-    const lineEnd = nextNewlineIndex === -1 ? value.length : nextNewlineIndex;
+    // Process each line individually
+    const sanitizedLines = lines.map((line) => {
+        // Trim spaces at line start
+        const trimmed = line.trimStart();
 
-    const currentLine = value.substring(lineStart, lineEnd);
+        // If line starts with '#', allow only known tags
+        if (trimmed.startsWith("#")) {
+            // Allow only these tags
+            const validTags = ["#para", "#lh", "#li"];
+            const matchedTag = validTags.find(tag => trimmed.startsWith(tag));
 
-    // Allow navigation keys
-    if (
-        ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab"].includes(
-            e.key
-        )
-    ) return;
+            if (!matchedTag) {
+                // If invalid tag — remove the #
+                return trimmed.replace(/^#/, "");
+            }
 
-    const isAtLineStart = cursorPos === lineStart;
-
-    if (isAtLineStart) {
-        // At start of line, only '#' allowed
-        if (e.key !== "#") {
-            e.preventDefault();
-        }
-    }
-
-    if (e.key === "#") {
-        if (!isAtLineStart) {
-            // Only allow '#' at start of line
-            e.preventDefault();
-            return;
+            // Keep tag as-is, but remove invalid extra #
+            return trimmed.replace(/(#[a-zA-Z]+)#*/g, "$1");
         }
 
-        // If a tag already exists in the line, block another '#'
-        if (currentLine.includes("#para") || currentLine.includes("#lh") || currentLine.includes("#li")) {
-            e.preventDefault();
-            return;
-        }
-    }
+        // Otherwise, no restriction for normal text lines
+        return trimmed;
+    });
 
-    // Other keys are allowed normally
+    // Join lines back
+    textarea.value = sanitizedLines.join("\n");
 };
 
 export const inputValidator = (
-    e: React.KeyboardEvent<HTMLInputElement>,
+    e: React.InputEvent<HTMLInputElement>,
     type?: "title" | "url"
 ) => {
-    const titleRegex = /^[a-zA-Z0-9\- ]$/;
+    console.log(e.currentTarget.selectionStart, e.currentTarget.selectionEnd)
+    const typedValue = e.data!;
+    const titleRegex = /^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]$/;
     const urlRegex = /^[a-zA-Z0-9\-]$/;
-
-    const allowedKeys = [
-        "ArrowLeft",
-        "ArrowRight",
-        "ArrowUp",
-        "ArrowDown",
-        "Backspace",
-        "Delete",
-        "Tab",
-        "Enter",
-        "Home",
-        "End",
-        "Escape",
-    ];
-
-    if (allowedKeys.includes(e.key)) return;
-
-    if (e.currentTarget.selectionStart === 0 && e.key === " ") {
+    if (e.currentTarget.selectionStart == 0 && e.data == ' ') {
         e.preventDefault();
         return;
     }
 
-    if (type === "title" && !titleRegex.test(e.key)) {
-        e.preventDefault();
-    } else if (type === "url" && !urlRegex.test(e.key)) {
-        e.preventDefault();
+    if (type === 'title' && e.data === ' ') {
+        const value = e.currentTarget.value;
+        const cursorPos = e.currentTarget.selectionStart ?? value.length;
+        const prevChar = value[cursorPos - 1];
+
+        if (prevChar === ' ') {
+            e.preventDefault();
+            return;
+        }
     }
+
+    const regexForCheck = type === 'title' ? titleRegex : urlRegex;
+    if (!regexForCheck.test(typedValue)) e.preventDefault();
 };

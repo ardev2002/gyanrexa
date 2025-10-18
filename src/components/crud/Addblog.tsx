@@ -87,8 +87,8 @@ export default function AddBlogPage() {
               placeholder="Enter blog URL (e.g., enhance-battery-life)"
               className="input input-bordered border-gray-400 dark:border-gray-600 join-item w-full"
               defaultValue={checkState.blogUrl}
-              onKeyDown={e => inputValidator(e, "url")}
               onChange={e => setBlogUrl(e.target.value)}
+              onBeforeInput={e => inputValidator(e, 'url')}
             />
             <button
               type="submit"
@@ -130,7 +130,7 @@ export default function AddBlogPage() {
               placeholder="Enter blog title"
               className="input input-bordered border-gray-400 dark:border-gray-600 w-full pr-10"
               defaultValue={publishState?.fields?.title}
-              onKeyDown={e => inputValidator(e, 'title')}
+              onBeforeInput={e => inputValidator(e, 'title')}
               required
             />
             <div
@@ -196,14 +196,14 @@ export default function AddBlogPage() {
             onClick={addSection}
             className="btn btn-outline btn-primary"
           >
-            <Plus/><span>Add Another Section</span>
+            <Plus /><span>Add Another Section</span>
           </button>
           <button
             type="button"
             onClick={removeLastSection}
             className="btn btn-outline btn-error"
           >
-            <X/><span>Remove Last Section</span>
+            <X /><span>Remove Last Section</span>
           </button>
         </div>
 

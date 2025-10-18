@@ -90,7 +90,7 @@ export default function Sections({ sections, handleSectionChange }: SectionsProp
               <input
                 type="text"
                 value={section.subheading}
-                onKeyDown={(e) => inputValidator(e, 'title')}
+                onBeforeInput={(e) => inputValidator(e, 'title')}
                 onChange={(e) =>
                   handleSectionChange(index, "subheading", e.target.value)
                 }

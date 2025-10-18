@@ -1,14 +1,7 @@
 "use server";
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
-
-const s3Client = new S3Client({
-    region: 'ap-south-1',
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_ID!
-    }
-})
+import { s3Client } from "../lib/s3";
 
 export async function deleteImageAction(imgKey: string | undefined) {
     if (!imgKey) return { message: "Missing image key", isSubmitted: true, ok: false };
